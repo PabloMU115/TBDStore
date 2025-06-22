@@ -1,0 +1,363 @@
+﻿@using TBD.Models.ViewModels
+@model GestionarCategoriasViewModel
+@{
+	int ap = 0;
+}
+<!-- Botón para abrir el modal -->
+<div class="container card p-4" style="color:white;">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2 class="mb-0">Listado de Categorias</h2>
+		<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ModalCrear">
+			<i class="fa-solid fa-square-plus"></i> Agregar Categoria
+		</button>
+	</div>
+
+	<div class="table-responsive">
+		<table id="tabla-categoria" class="display table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">ID</th>
+					<th class="text-center">Nombre</th>
+					<th class="text-center" style="width:120px !important;">Cantidad de Productos</th>
+					<th class="text-center">Opciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var p in Model.Categorias)
+				{
+					<tr class="tr-tabla">
+						<td class="id" id="@p.IdCategoria">
+							@p.IdCategoria
+						</td>
+						<td>
+							<a class="nombre" id="@p.NombreCategoria"
+							   asp-controller="Categoria"
+							   asp-action="Index"
+							   asp-route-id="@p.IdCategoria"
+							   asp-route-nombre="@p.NombreCategoria"
+							   asp-route-pageNumber="1"
+							   asp-route-showAll="False"
+							   asp-route-filter="1"
+							   asp-route-idCategoria="@p.IdCategoria">@p.NombreCategoria</a>
+						</td>
+						<td id="contador_@p.IdCategoria">@Model.Productos[ap]</td>
+						<td>
+							<button class="btn-editarCategoria btn-warning" onclick="openEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>
+							<button class="btn-eliminarCategoria btn-danger" onclick="openDelete(this)"><i class="fa-solid fa-trash-can"></i></button>
+						</td>
+					</tr>
+					ap+=1;
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Modal Crear -->
+<div class="modal fade" id="ModalCrear" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalCrearLabel" aria-hidden="true"
+	 style="background-color: transparent !important; backdrop-filter: blur(10px);">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalCrearLabel">Agregar un Categoria nueva</h5>
+				<button type="button" class="btn-close" onclick="cerrarCrear()" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container" id="formulario-container">
+					<div id="formulario-categoria">
+						<!-- Fila 1: Nombre -->
+						<div class="">
+							<div class="">
+								<label for="input-nombre" class="form-label">Nombre</label>
+								<input type="text" class="form-control" id="input-nombre-categoria-crear" maxlength="45" name="Nombre" oninput="actualizarContadorNombre(this)">
+								<p class="" id="contador_Nombre" style="margin-bottom: 5px !important;">0/45 caracteres</p>
+							</div>
+						</div>
+
+						<!-- Fila 2: Botón -->
+						<div class="row">
+							<div class="col text-center">
+								<button class="btn btn-success" id="btn-guardar" onclick="crearCategoria()">Guardar Categoria</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal fade"
+	 id="deleteCategoria"
+	 data-bs-backdrop="static"
+	 data-bs-keyboard="false"
+	 tabindex="-1"
+	 aria-labelledby="staticBackdropLabel"
+	 aria-hidden="true"
+	 style="background-color: rgba(0, 0, 0, 0.2) !important;">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="staticBackdropLabel">Eliminar Categoria</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<h3>¿Desea eliminar esta categoria?</h3>
+				<h4 id="tagCategoria"></h4>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" onclick="deleteCategoria(this)">Confirmar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="editCategoria" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modaleditarLabel" aria-hidden="true" style="background-color: transparent !important; backdrop-filter: blur(10px);">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modaleditarLabel">Editar categoria</h5>
+				<button type="button" class="btn-close" onclick="cerrarEditar()" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container" id="formulario-container">
+					<div id="formulario-categoria">
+
+						<!-- Fila 1: Nombre -->
+						<div class="">
+							<div class="">
+								<label for="input-nombre" class="form-label">Nombre</label>
+								<input type="text" class="form-control" id="input-nombre-categoria-editar" maxlength="45" name="Nombre" oninput="actualizarContadorNombreEditar(this)">
+								<p class="mt-1" id="contador_Nombre_editar" style="margin-bottom: 5px !important;">0/45 caracteres</p>
+							</div>
+						</div>
+
+						<!-- Fila 2: Botón -->
+						<div class="row">
+							<div class="col text-center">
+								<button class="btn btn-success" id="btn-guardar" onclick="editarCategoria()">Guardar cambios</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script>
+		var categoriaSeleccionada;
+
+		function actualizarContadorNombre(textarea) {
+			const nombreInput = document.getElementById("input-nombre-categoria-crear");
+			const errorSpan = document.getElementById("contador_Nombre");
+			if (nombreInput.value !== "") {
+				errorSpan.className = "mt-1";
+				errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+			}
+			else{
+			errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+			}
+
+		}
+
+		function actualizarContadorNombreEditar(textarea) {
+			const nombreInput = document.getElementById("input-nombre-categoria-editar");
+			const errorSpan = document.getElementById("contador_Nombre_editar");
+			if (nombreInput.value !== "") {
+				errorSpan.className = "mt-1";
+				errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+			}
+			else{
+			errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+			}
+
+		}
+
+		var dataTable;
+
+		$(document).ready(function () {
+			cargarTabla();
+		});
+
+		function cargarTabla() {
+			dataTable = $('#tabla-categoria').DataTable({
+				language: {
+					decimal: "",
+					emptyTable: "No hay categorias disponibles en la tabla",
+					info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+					infoEmpty: "Mostrando 0 a 0 de 0 entradas",
+					infoFiltered: "(filtrado de _MAX_ entradas totales)",
+					lengthMenu: "Mostrar _MENU_ entradas",
+					loadingRecords: "Cargando...",
+					processing: "Procesando...",
+					search: "Buscar:",
+					zeroRecords: "No se encontraron categorias que coincidan.",
+					paginate: {
+						first: "Primero",
+						last: "Último",
+						next: "Siguiente",
+						previous: "Anterior"
+					},
+					aria: {
+						sortAscending: ": activar para ordenar columna ascendente",
+						sortDescending: ": activar para ordenar columna descendente"
+					}
+				}
+			});
+		}
+
+		function crearCategoria() {
+			const nombreInput = document.getElementById("input-nombre-categoria-crear");
+			var error = true;
+			if(nombreInput.value === ""){
+				document.getElementById("contador_Nombre").className = "error-text";
+				document.getElementById("contador_Nombre").textContent = "Debe ingresar un nombre.";
+				error = false;
+			}
+			
+			const ranges = [[65, 90], [97, 122]];
+			const [min, max] = ranges[Math.floor(Math.random() * ranges.length)];
+			const caracter = String.fromCharCode(Math.floor(Math.random() * (max - min + 1)) + min);
+
+			const categoria = {
+				IdCategoria: "C" + (Math.floor(Math.random() * 99) + 10) + "" + (Math.floor(Math.random() * 99) + 10) + caracter,
+				NombreCategoria: nombreInput.value
+			};
+
+			if(error){
+			$.ajax({
+				url: '@Url.Action("CrearCategoria", "CategoriaApi")',
+				type: "POST",
+				data: JSON.stringify(categoria),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (data) {
+					if (data.result) {
+						const rowData = [
+							`<span class="id" id="${data.categoria.idCategoria}">${data.categoria.idCategoria}</span>`,
+							`<a class="nombre" id="${data.categoria.nombreCategoria}" href="Tienda/Categorias/${data.categoria.idCategoria}-${categoria.NombreCategoria}/Page/1/showAll/False?filter=1">${data.categoria.nombreCategoria}</a>`,
+							`0`,
+							`<button class="btn-editarCategoria btn-warning" onclick="openEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>
+							<button class="btn-eliminarCategoria btn-danger" onclick="openDelete(this)"><i class="fa-solid fa-trash-can"></i></button>`
+						];
+
+						const rowNode = dataTable.row.add(rowData).draw(false).node();
+						$(rowNode).find('td').eq(0).attr('id', `${data.categoria.idCategoria}`).addClass('id');
+						$(rowNode).find('td').eq(2).attr('id', `contador_${data.categoria.idCategoria}`);
+						$(rowNode).addClass('tr-tabla');
+						// Limpiar campos y cerrar modal
+						cerrarCrear();
+						alert("Categoria creada de forma exitosa");
+					}
+				}
+			});
+			}
+		}
+
+		function cerrarCrear(){
+			document.getElementById("contador_Nombre").className = "";
+			document.getElementById("contador_Nombre").textContent = "0/45 caracteres";
+			$("#input-nombre-categoria-crear").val('');
+			$("#ModalCrear").modal("hide");
+		}
+
+		function openDelete(data){
+			$("#deleteCategoria").modal("show");
+			let padre = data.closest('.tr-tabla');
+			document.getElementById('tagCategoria').textContent = ''+padre.querySelector('.nombre').id;
+			categoriaSeleccionada = ''+padre.querySelector('.id').id;
+			console.log(categoriaSeleccionada);
+		}
+
+		function openEdit(data){
+			$("#editCategoria").modal("show");
+			let padre = data.closest('.tr-tabla');
+			categoriaSeleccionada = ''+padre.querySelector('.id').id;
+
+			var name = document.getElementById("input-nombre-categoria-editar");
+			name.value = ''+padre.querySelector('.nombre').id;;
+			document.getElementById("contador_Nombre_editar").textContent = `${name.value.length}/45 caracteres`;
+		}
+
+		function editarCategoria(){
+			const nombreInput = document.getElementById("input-nombre-categoria-editar");
+			var error = true;
+			if(nombreInput.value === ""){
+				document.getElementById("contador_Nombre_editar").className = "error-text";
+				document.getElementById("contador_Nombre_editar").textContent = "Debe ingresar un nombre.";
+				error = false;
+			}
+
+			const categoria = {
+				IdCategoria: categoriaSeleccionada,
+				NombreCategoria: $("#input-nombre-categoria-editar").val()
+			};
+
+			if(error){
+				$.ajax({
+				url: '/api/categoriaapi/'+categoriaSeleccionada,
+				type: "PUT",
+				data: JSON.stringify(categoria),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (data) {
+					if (data.result) {
+						alert("Categoria editada de forma correcta!");
+						let row = dataTable.row(document.getElementById(categoriaSeleccionada));
+						let datos = row.data();
+						datos[1] = `<a class="nombre" id="${categoria.NombreCategoria}" href="Tienda/Categorias/${categoriaSeleccionada}-${categoria.NombreCategoria}/Page/1/showAll/false">${categoria.NombreCategoria}</a>`;
+						row.data(datos).invalidate().draw();
+						categoriaSeleccionada = '';
+						cerrarEditar();
+					}
+				}
+			});
+			}
+		}
+
+		function cerrarEditar(){
+			document.getElementById("contador_Nombre_editar").className = "";
+			$("#editCategoria").modal("hide");
+		}
+
+		function deleteCategoria(){
+			contador = document.getElementById("contador_"+categoriaSeleccionada);
+			const categoria = {
+				IdCategoria: categoriaSeleccionada
+			};
+
+			if(contador.innerText === "0"){
+				$.ajax({
+				url: '@Url.Action("EliminarCategoria", "CategoriaApi")',
+				type: "DELETE",
+				data: JSON.stringify(categoria),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (data) {
+					if (data.result) {
+						alert("Categoria eliminada de forma correcta!");
+						dataTable.row(document.getElementById(categoriaSeleccionada)).remove().draw();
+						categoriaSeleccionada = '';
+						$("#deleteCategoria").modal("hide");
+					}
+				}
+			});
+			}
+			else{
+			alert("Esta Categoria no puede ser eliminada por que no se encuentra vacía.");
+			}
+		}
+
+		window.addEventListener("pageshow", function (event) {
+			if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+				window.location.reload();
+			}
+		});
+
+	</script>
+}

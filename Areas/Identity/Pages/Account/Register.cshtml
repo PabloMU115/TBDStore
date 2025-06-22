@@ -1,0 +1,102 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<div class="container" style="margin-bottom:70px !important;">
+    <div class="row">
+        <!-- Columna del formulario de registro -->
+        <div class="">
+            <div class="formIdentity card shadow p-4">
+                <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="usuario@ejemplo.com" />
+                        <label asp-for="Input.Email" class="register-form-label">Correo electrónico</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.FullName" class="form-control" autocomplete="name" aria-required="true" placeholder="Nombre Completo" />
+                        <label asp-for="Input.FullName" class="register-form-label">Nombre Completo</label>
+                        <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input id="password" asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.Password" class="register-form-label">Contraseña</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input id="confirmPassword" asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.ConfirmPassword" class="register-form-label">Confirmar Contraseña</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        <input type="checkbox" onclick="mostrar()"> Mostrar Contraseña
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn btn-success w-100 mb-2" style="border: 2px solid transparent !important;"><h4>Crear cuenta</h4></button>
+                </form>
+
+                <div class="mb-3">
+                    <label class="form-label text-center w-100">¿Ya tienes cuenta?</label>
+                    <a asp-page="/Account/Login" asp-area="Identity" class="btn btn-primary w-100" style="border: 2px solid transparent !important;"><h4>Inicia Sesión</h4></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna de servicios externos -->
+        @* <div class="col-md-6">
+            <div class="formIdentity card shadow p-4 h-100">
+                <section>
+                    <h3 class="text-center">Usa otro servicio para registrarte</h3>
+                    <hr />
+                    @{
+                        if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                        {
+                            <div>
+                                <p>
+                                    No hay servicios de autenticación externos configurados. Consulta este
+                                    <a href="https://go.microsoft.com/fwlink/?LinkID=532715" target="_blank">artículo</a> para habilitarlos.
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                <div class="d-grid gap-2">
+                                    @foreach (var provider in Model.ExternalLogins!)
+                                    {
+                                        <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Iniciar sesión con @provider.DisplayName">
+                                            @provider.DisplayName
+                                        </button>
+                                    }
+                                </div>
+                            </form>
+                        }
+                    }
+                </section>
+            </div>
+        </div> *@
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function mostrar(){
+        var x = document.getElementById("password");
+        var z = document.getElementById("confirmPassword");
+        if (x.type === "password") {
+          x.type = "text";
+          z.type = "text";
+        } else {
+          x.type = "password";
+          z.type = "password";
+        }
+        }
+    </script>
+}

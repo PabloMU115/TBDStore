@@ -1,0 +1,187 @@
+﻿@using TBD.Models.ViewModels
+@model TodasCategoriasViewModel
+@{
+	int endItem = Math.Min(Model.PageNumber * Model.ItemsPerPage, Model.TotalItems);
+	bool mostrandoTodo = Model.ItemsPerPage == 0 || Model.TotalPages <= 1;
+}
+<div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+	<a class="text-decoration-none" asp-controller="Home" asp-action="ListarCategorias">
+		<h4 class="mb-0">Inicio</h4>
+	</a>
+	<h4 class="mb-0">/Lista de categorias</h4>
+</div>
+
+<h3 class="mb-4">
+	Explora todas las categorías:
+</h3>
+<div class="container">
+	<div class="row justify-content-center gx-3 gy-3">
+		@foreach (var c in Model.Categorias)
+		{
+			<div class="col-3 col-sm-3 col-md-3 col-lg-3">
+				<a class="categoria-link d-block text-decoration-none"
+				   asp-controller="Categoria"
+				   asp-action="Index"
+				   asp-route-id="@c.IdCategoria"
+				   asp-route-nombre="@c.NombreCategoria"
+				   asp-route-filter="1"
+				   asp-route-pageNumber="1"
+				   asp-route-showAll="@false">
+
+					<div class="card h-100">
+						<div class="card-body d-flex align-items-center justify-content-center text-center">
+							<h5 class="mb-0">@c.NombreCategoria</h5>
+						</div>
+					</div>
+				</a>
+			</div>
+		}
+	</div>
+</div>
+@if (!mostrandoTodo && Model.Categorias.Count() != 0)
+{
+	<nav aria-label="Page navigation">
+
+		<a class="boton-todos mb-2"
+		   style="font-size:14px;text-decoration: none;"
+		   asp-action="ListarCategorias"
+		   asp-route-showAll="true">
+			Mostrar todos
+		</a>
+		<ul class="pagination justify-content-center pagination-wide">
+			@{
+				int totalPages = Model.TotalPages;
+				int currentPage = Model.PageNumber;
+				int firstPage = 1;
+				int lastPage = totalPages;
+			}
+
+			@if (Model.HasPreviousPage)
+			{
+				<li class="page-item">
+					<a class="page-link" asp-controller="Categoria"
+					   asp-action="ListarCategorias"
+					   asp-route-pageNumber="@(currentPage - 1)"
+					   asp-route-showAll="@false">Anterior</a>
+				</li>
+			}
+			else
+			{
+				<li class="page-item disabled"><span class="page-link">Anterior</span></li>
+			}
+
+			@* Mostrar la primera página siempre *@
+			<li class="page-item @(currentPage == firstPage ? "active" : "")">
+				@if (currentPage == firstPage)
+				{
+					<span class="page-link">@firstPage</span>
+				}
+				else
+				{
+					<a class="page-link"
+					   asp-controller="Categoria"
+					   asp-action="ListarCategorias"
+					   asp-route-pageNumber="@firstPage"
+					   asp-route-showAll="@false">@firstPage</a>
+				}
+			</li>
+
+			@* Mostrar "..." si la página actual está alejada de la primera página *@
+			@if (currentPage > 3)
+			{
+				<li class="page-item disabled"><span class="page-link">...</span></li>
+			}
+
+			@* Mostrar páginas alrededor de la página actual *@
+			@for (int i = Math.Max(2, currentPage - 1); i <= Math.Min(currentPage + 1, lastPage - 1); i++)
+			{
+				if (i == firstPage || i == lastPage)
+				{
+					continue; // Ya mostramos la primera y la última página
+				}
+
+				if (i == currentPage)
+				{
+					<li class="page-item active"><span class="page-link">@i</span></li>
+				}
+				else
+				{
+					<li class="page-item">
+						<a class="page-link"
+						   asp-controller="Categoria"
+						   asp-action="ListarCategorias"
+						   asp-route-pageNumber="@i"
+						   asp-route-showAll="@false">@i</a>
+					</li>
+				}
+			}
+
+			@* Mostrar "..." si la página actual está alejada de la última página *@
+			@if (currentPage < lastPage - 2)
+			{
+				<li class="page-item disabled"><span class="page-link">...</span></li>
+			}
+
+			@* Mostrar la última página siempre (solo si hay más de una página) *@
+			@if (lastPage > 1)
+			{
+				<li class="page-item @(currentPage == lastPage ? "active" : "")">
+					@if (currentPage == lastPage)
+					{
+						<span class="page-link">@lastPage</span>
+					}
+					else
+					{
+						<a class="page-link"
+						   asp-controller="Categoria"
+						   asp-action="ListarCategorias"
+						   asp-route-pageNumber="@lastPage"
+						   asp-route-showAll="@false">@lastPage</a>
+					}
+				</li>
+			}
+
+			@if (Model.HasNextPage)
+			{
+				<li class="page-item">
+					<a class="page-link"
+					   asp-controller="Categoria"
+					   asp-action="ListarCategorias"
+					   asp-route-pageNumber="@(currentPage + 1)"
+					   asp-route-showAll="@false">Siguiente</a>
+				</li>
+			}
+			else
+			{
+				<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+			}
+		</ul>
+		<div class="text-center mt-2">
+			<h4>Mostrando @endItem de @Model.TotalItems resultados</h4>
+		</div>
+	</nav>
+}
+else
+{
+	if (endItem != Model.TotalItems)
+	{
+		<a class="boton-todos mb-2"
+		   style="width:50%; font-size:14px;"
+		   asp-action="ListarCategorias"
+		   asp-route-showAll="@false">
+			Mostrar paginación
+		</a>
+		<div class="text-center">
+			<h4>Mostrando @Model.TotalItems resultados</h4>
+		</div>
+	}
+	else
+	{
+		@if (Model.Categorias.Count() != 0)
+		{
+			<div class="text-center mt-2">
+				<h4>Fin de la lista Categorias.</h4>
+			</div>
+		}
+	}
+}

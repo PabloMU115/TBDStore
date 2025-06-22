@@ -1,0 +1,183 @@
+﻿@using TBD.Models.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+@model TiendaViewModel
+@{
+	ViewData["Title"] = "Index";
+	ViewData["Categorias"] = Model.Categorias;
+	var contador = 0;
+	var agregadas = 0;
+}
+
+@if (User.IsInRole("admin"))
+{
+	<h2>Poner Gráficos luego</h2>
+}
+else
+{
+@* Sidenav categorias *@
+	<nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" id="sideNavbar">
+		<div id="container-side-nav" class="container-fluid">
+			<!-- Botón para colapsar el sidebar solo en móvil -->
+			<button class="navbar-toggler collapsed custom-toggler mb-2" type="button"
+					data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+					aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="bar top-bar"></span>
+				<span class="bar middle-bar"></span>
+				<span class="bar bottom-bar"></span>
+			</button>
+			<!-- Contenido del sidebar/navbar -->
+			<div class="collapse navbar-collapse gap-2" id="sidebarMenu">
+				@if (Model.Categorias.Count() == 0)
+				{
+					<ul id="nav-categorias" class="navbar-nav flex-column flex-lg-row w-100">
+
+						<li class="nav-item d-flex justify-content-center w-100">
+							<h3>No hay categorias disponibles</h3>
+						</li>
+
+					</ul>
+				}
+				else
+				{
+					@foreach (var c in Model.Categorias)
+					{
+						@if (Model.Productos[agregadas].Count() > 0)
+						{
+							<ul id="nav-categorias" class="navbar-nav flex-column flex-lg-row w-100">
+
+								<li class="nav-item d-flex justify-content-center w-100">
+									<a id="textoCategoria" class="nav-link text-center w-100" style="font-size: 14px; border: 1px solid; border-radius: 8px;"
+									   asp-controller="Categoria"
+									   asp-action="Index"
+									   asp-route-filter="1"
+									   asp-route-id="@Model.Categorias[agregadas].IdCategoria"
+									   asp-route-nombre="@Model.Categorias[agregadas].NombreCategoria"
+									   asp-route-pageNumber="1"
+									   asp-route-showAll="@false">
+										@Model.Categorias[agregadas].NombreCategoria
+									</a>
+								</li>
+
+							</ul>
+							contador++;
+						}
+						agregadas++;
+						if (contador > 4)
+						{
+							<ul id="nav-categorias" class="navbar-nav flex-column flex-lg-row w-100">
+								<li class="nav-item d-flex justify-content-center w-100">
+									<a id="textoCategoria" class="nav-link text-center w-100" style="font-size: 14px; border: 1px solid; border-radius: 8px;"
+									   asp-controller="Categoria"
+									   asp-action="ListarCategorias"
+									   asp-route-pageNumber="1"
+									   asp-route-showAll="@false">
+										Más <i class="fa-solid fa-angles-right"></i>
+									</a>
+								</li>
+							</ul>
+							contador = 0;
+							break;
+						}
+					}
+					contador = 0;
+				}
+			</div>
+		</div>
+	</nav>
+	<div class="border-bottom border-secondary mb-3"></div>
+
+
+	@if (Model.Categorias.Count() == 0 && Model.Productos.Count() == 0)
+	{
+		<h3>No hay categorias ni productos disponibles</h3>
+	}
+
+	@if (Model.Categorias.Count() > 0 && Model.Productos.Count() > 0)
+	{
+		@foreach (var c in Model.Categorias)
+		{
+			if (Model.Productos[contador].Count() > 0)
+			{
+				<div class="mt-3">
+				<h3 id="nav-categorias" style="margin-left: 5px; display: inline-block;">
+					<a id="textoCategoria" class="nav-link text-center w-100" style="font-size: 14px; border: 1px solid; border-radius: 8px;"
+					   asp-controller="Categoria"
+					   asp-action="Index"
+					   asp-route-filter="1"
+					   asp-route-id="@c.IdCategoria"
+					   asp-route-nombre="@c.NombreCategoria"
+					   asp-route-pageNumber="1"
+					   asp-route-showAll="@false">
+						@c.NombreCategoria
+					</a>
+					</h3>
+					<div id="contenedor-scroll" class="d-flex contenedor-scroll" style="overflow: visible;">
+						@foreach (var p in Model.Productos)
+						{
+							var val = 0;
+							if (p.Count < 6)
+							{
+								val = p.Count;
+							}
+							else
+							{
+								val = 6;
+							}
+							var lista = new List<int>();
+							@for (int i = 0; i < val; i++)
+							{
+								Random rand = new Random();
+								int numeroAleatorio = rand.Next(0, p.Count);
+								while (true)
+								{
+									if (lista.Contains(numeroAleatorio))
+									{
+										rand = new Random();
+										numeroAleatorio = rand.Next(0, p.Count);
+									}
+									else
+									{
+										break;
+									}
+								}
+								lista.Add(numeroAleatorio);
+								var pr = p[numeroAleatorio];
+								if (pr.IdCategoria == c.IdCategoria)
+								{
+									<div class="col-md-2 mb-3">
+										<a class="producto-link mt-2"
+										   style="display: flex; text-decoration: none;"
+										   asp-controller="Producto"
+										   asp-action="GetProducto"
+										   asp-route-id="@pr.Id"
+										   asp-route-nombre="@pr.Nombre"
+										   asp-route-idCategoria="@pr.IdCategoria">
+
+											<div class="card w-100 w-md-auto" style="height: 230px;">
+												<div class="card-body d-flex flex-column">
+													<img src="@pr.Imagen" alt="@pr.Nombre"
+														 style="max-width: 100px; max-height: 100px;"
+														 class="mb-2 mx-auto d-block">
+												</div>
+												<div class="text-center mb-2" id="nombre_@pr.Id" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
+													<h5>₡@pr.Precio</h5>
+												</div>
+												<div id="div-texto-categoria" class="text-center">
+													<h5 class="producto-link-texto">@pr.Nombre</h5>
+												</div>
+											</div>
+										</a>
+									</div>
+								}
+							}
+						}
+					</div>
+				</div>
+			}
+			contador++;
+	}
+}
+	
+}

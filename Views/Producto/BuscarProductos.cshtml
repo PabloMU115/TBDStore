@@ -1,0 +1,304 @@
+﻿@using TBD.Models.ViewModels
+@model BusquedaProductoViewModel
+@{
+	int endItem = Math.Min(Model.PageNumber * Model.ItemsPerPage, Model.TotalItems);
+	bool mostrandoTodo = Model.ItemsPerPage == 0 || Model.TotalPages <= 1;
+}
+@if (Model.NombreCategoria.Equals(""))
+{
+	<div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+		<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
+			<h4 class="mb-0">Inicio</h4>
+		</a>
+		<h4 class="mb-0">/Todas las categorias /Resultados "@Model.Busqueda"</h4>
+	</div>
+}
+else
+{
+	<div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+		<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
+			<h4 class="mb-0">Inicio</h4>
+		</a>
+		<a class="text-decoration-none categoria-link"
+		   asp-controller="Categoria"
+		   asp-action="Index"
+		   asp-route-id="@Model.idCategoria"
+		   asp-route-nombre="@Model.NombreCategoria"
+		   asp-route-pageNumber="1"
+		   asp-route-showAll="@false">
+			<h4 class="mb-0">/@Model.NombreCategoria</h4>
+		</a>
+		<h4 class="mb-0">/Resultados "@Model.Busqueda"</h4>
+	</div>
+}
+
+<div class="container mt-3" style="">
+	@if (!Model.NombreCategoria.Equals("") && Model.Productos.Count() != 0)
+	{
+		<h2>Resultados en la categoria: "@Model.NombreCategoria"</h2>
+		<h3>"@Model.Busqueda"</h3>
+	}
+	else
+	{
+		@if (Model.Productos.Count() != 0)
+		{
+			<h2>Buscando en todas las categorias el término: "@Model.Busqueda"</h2>
+		}
+	}
+	@if (Model.Productos.Count() != 0 && Model.Productos.Count() > 1)
+	{
+		<div class="col-4 d-flex flex-row gap-2 mb-2 w-100" style="">
+			<h3 class="">Filtrar </h3>
+			<select id="selectProducto" style="width:170px; height:30px; cursor: pointer;" name="ordenar" class="form-select mt-1 mb-1" onchange="location.href=this.value;">
+				<option value="@Url.Action("BuscarProductos", "Producto", new { idCategoria = Model.id, busqueda = Model.Busqueda, filter = "1", pageNumber = 1, showAll = false })" onchange="location.href=this.value;">A - Z</option>
+				<option value="@Url.Action("BuscarProductos", "Producto", new { idCategoria = Model.id, busqueda = Model.Busqueda, filter = "2", pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Z - A</option>
+				<option value="@Url.Action("BuscarProductos", "Producto", new { idCategoria = Model.id, busqueda = Model.Busqueda, filter = "4", pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Precio más alto primero</option>
+				<option value="@Url.Action("BuscarProductos", "Producto", new { idCategoria = Model.id, busqueda = Model.Busqueda, filter = "3", pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Precio más bajo primero</option>
+
+			</select>
+		</div>
+
+	}
+	<div id="contenedor-productos" class="row justify-content-center">
+		@if (Model.Productos.Count() == 0)
+		{
+			@if (!Model.NombreCategoria.Equals(""))
+			{
+				<h2>Resultados en la categoria: "@Model.NombreCategoria"</h2>
+				<h3>"@Model.Busqueda"</h3>
+			}
+			else
+			{
+				<h2>Buscando en todas las categorias el término: "@Model.Busqueda"</h2>
+			}
+			<div class="col-12">
+				<img src="https://helpdesk.tpacademytrust.org/assets/cdn/portal/images/no-results.png" alt="confused"
+					 style="max-width: 170px; max-height: 170px;"
+					 class="mb-2 mx-auto d-block">
+				<h3 class="text-center">Ups... no encontramos resultados que coincidan con el termino "@Model.Busqueda"</h3>
+			</div>
+			<div class="col-12">
+				<a class="boton-volver mt-4" id="div-volver-inicio"
+				   asp-controller="Home"
+				   asp-action="Tienda"
+				   style="text-decoration: none;">
+					<i class="fa-solid fa-left-long"></i> Volver al inicio
+				</a>
+			</div>
+
+		}
+		else
+		{
+			@foreach (var c in Model.Productos)
+			{
+				<div class="col-6 col-md-4">
+					<a id="" class="producto-link-busqueda mt-2"
+					   style="display: flex; text-decoration: none; width:100% !important;"
+					   asp-controller="Producto"
+					   asp-action="GetProducto"
+					   asp-route-id="@c.Id"
+					   asp-route-nombre="@c.Nombre"
+					   asp-route-idCategoria="@c.IdCategoria">
+
+						<div class="card w-100 w-md-auto" style="height: 250px;">
+							<div class="card-body d-flex flex-column">
+								<img id="imagenCategoria" src="@c.Imagen" alt="@c.Nombre"
+									 style="max-width: 150px; max-height: 150px;"
+									 class="mx-auto d-block">
+							</div>
+							<div class="text-center mb-2" id="nombre_@c.Id" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
+								<h5 id="precio_busqueda">₡@c.Precio</h5>
+							</div>
+							<div class="text-center mb-2 mt-2">
+								<h5 class="producto-link-texto">@c.Nombre</h5>
+							</div>
+						</div>
+					</a>
+				</div>
+			}
+		}
+	</div>
+	@if (!mostrandoTodo && Model.Productos.Count() != 0)
+	{
+		<nav aria-label="Page navigation">
+			<a class="boton-todos mb-2"
+			   style="font-size:14px;text-decoration: none;"
+			   asp-action="BuscarProductos"
+			   asp-route-id="@Model.id"
+			   asp-route-busqueda="@Model.Busqueda"
+			   asp-route-showAll="true">
+				Mostrar todos
+			</a>
+			<ul class="pagination justify-content-center pagination-wide">
+				@{
+					int totalPages = Model.TotalPages;
+					int currentPage = Model.PageNumber;
+					int firstPage = 1;
+					int lastPage = totalPages;
+				}
+
+				@if (Model.HasPreviousPage)
+				{
+					<li class="page-item">
+						<a class="page-link" asp-controller="Producto"
+						   asp-action="BuscarProductos"
+						   asp-route-id="@Model.id"
+						   asp-route-busqueda="@Model.Busqueda"
+						   asp-route-pageNumber="@(currentPage - 1)"
+						   asp-route-showAll="@false">Anterior</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled"><span class="page-link">Anterior</span></li>
+				}
+
+				@* Mostrar la primera página siempre *@
+				<li class="page-item @(currentPage == firstPage ? "active" : "")">
+					@if (currentPage == firstPage)
+					{
+						<span class="page-link">@firstPage</span>
+					}
+					else
+					{
+						<a class="page-link"
+						   asp-controller="Producto"
+						   asp-action="BuscarProductos"
+						   asp-route-id="@Model.id"
+						   asp-route-busqueda="@Model.Busqueda"
+						   asp-route-pageNumber="@firstPage"
+						   asp-route-showAll="@false">@firstPage</a>
+					}
+				</li>
+
+				@* Mostrar "..." si la página actual está alejada de la primera página *@
+				@if (currentPage > 3)
+				{
+					<li class="page-item disabled"><span class="page-link">...</span></li>
+				}
+
+				@* Mostrar páginas alrededor de la página actual *@
+				@for (int i = Math.Max(2, currentPage - 1); i <= Math.Min(currentPage + 1, lastPage - 1); i++)
+				{
+					if (i == firstPage || i == lastPage)
+					{
+						continue; // Ya mostramos la primera y la última página
+					}
+
+					if (i == currentPage)
+					{
+						<li class="page-item active"><span class="page-link">@i</span></li>
+					}
+					else
+					{
+						<li class="page-item">
+							<a class="page-link"
+							   asp-controller="Producto"
+							   asp-action="BuscarProductos"
+							   asp-route-id="@Model.id"
+							   asp-route-busqueda="@Model.Busqueda"
+							   asp-route-pageNumber="@i"
+							   asp-route-showAll="@false">@i</a>
+						</li>
+					}
+				}
+
+				@* Mostrar "..." si la página actual está alejada de la última página *@
+				@if (currentPage < lastPage - 2)
+				{
+					<li class="page-item disabled"><span class="page-link">...</span></li>
+				}
+
+				@* Mostrar la última página siempre (solo si hay más de una página) *@
+				@if (lastPage > 1)
+				{
+					<li class="page-item @(currentPage == lastPage ? "active" : "")">
+						@if (currentPage == lastPage)
+						{
+							<span class="page-link">@lastPage</span>
+						}
+						else
+						{
+							<a class="page-link"
+							   asp-controller="Producto"
+							   asp-action="BuscarProductos"
+							   asp-route-id="@Model.id"
+							   asp-route-busqueda="@Model.Busqueda"
+							   asp-route-pageNumber="@lastPage"
+							   asp-route-showAll="@false">@lastPage</a>
+						}
+					</li>
+				}
+
+				@if (Model.HasNextPage)
+				{
+					<li class="page-item">
+						<a class="page-link"
+						   asp-controller="Producto"
+						   asp-action="BuscarProductos"
+						   asp-route-id="@Model.id"
+						   asp-route-busqueda="@Model.Busqueda"
+						   asp-route-pageNumber="@(currentPage + 1)"
+						   asp-route-showAll="@false">Siguiente</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+				}
+			</ul>
+			<div class="text-center mt-2">
+				<h4>Mostrando @endItem de @Model.TotalItems resultados</h4>
+			</div>
+		</nav>
+	}
+	else
+	{
+		if (endItem != Model.TotalItems)
+		{
+			<a class="boton-todos mb-2"
+			   style="width:50%; font-size:14px;"
+			   asp-action="BuscarProductos"
+			   asp-route-id="@Model.id"
+			   asp-route-busqueda="@Model.Busqueda"
+			   asp-route-showAll="@false">
+				Mostrar paginación
+			</a>
+			<div class="text-center">
+				<h4>Mostrando @Model.TotalItems resultados</h4>
+			</div>
+		}
+		else
+		{
+			@if (Model.Productos.Count() != 0)
+			{
+				<div class="text-center mt-2">
+					<h4>Fin de la lista.</h4>
+				</div>
+			}
+		}
+	}
+</div>
+
+@section Scripts {
+	<script>
+
+		window.onload = function () {
+			const filtro = @Model.filter;
+			const select = document.getElementById("selectProducto");
+
+			// filtro: 1 → index 0, 2 → index 1, 4 → index 2, 3 → index 3
+			const indexMap = {
+				1: 0,
+				2: 1,
+				4: 2,
+				3: 3
+			};
+
+			select.selectedIndex = indexMap[filtro] ?? 0;
+		};
+
+
+
+	</script>
+}

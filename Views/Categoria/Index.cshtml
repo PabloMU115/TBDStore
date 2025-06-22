@@ -1,0 +1,107 @@
+﻿@using TBD.Models.ViewModels
+@model CategoriaProductoViewModel
+@{
+	int endItem = Math.Min(Model.PageNumber * Model.ItemsPerPage, Model.TotalItems);
+	bool mostrandoTodo = Model.ItemsPerPage == 0 || Model.TotalPages <= 1;
+}
+<div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+	<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
+		<h4 class="mb-0">Inicio</h4>
+	</a>
+	<a class="text-decoration-none" asp-controller="Categoria" asp-action="ListarCategorias">
+		<h4 class="mb-0">/Categorias</h4>
+	</a>
+	<h4 class="mb-0">/@Model.Categoria.NombreCategoria</h4>
+</div>
+<div class="container" style="">
+	<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
+		<h3 style="margin: 0;">Productos filtrados según la categoría:</h3>
+		<h3 style="margin: 0; border: 1px solid #ccc; border-radius: 8px; padding: 5px; display: inline-block;">
+			@Model.Categoria.NombreCategoria
+		</h3>
+	</div>
+	@if (Model.Productos.Count() != 0)
+	{
+	<div class="col-4 d-flex flex-row gap-2 mb-2 w-100" style="">
+		<h3 class="">Filtrar </h3>
+		<select id="selectCategoria" style="width:170px; height:30px; cursor: pointer;" name="ordenar" class="form-select mt-1 mb-1" onchange="location.href=this.value;">
+			<option value="@Url.Action("Index", "Categoria", new { id = Model.Categoria.IdCategoria, nombre = Model.Categoria.NombreCategoria, filter = 1, pageNumber = 1, showAll = false })" onchange="location.href=this.value;">A - Z</option>
+			<option value="@Url.Action("Index", "Categoria", new { id = Model.Categoria.IdCategoria, nombre = Model.Categoria.NombreCategoria, filter = 2, pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Z - A</option>
+			<option value="@Url.Action("Index", "Categoria", new { id = Model.Categoria.IdCategoria, nombre = Model.Categoria.NombreCategoria, filter = 4, pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Precio más alto primero</option>
+			<option value="@Url.Action("Index", "Categoria", new { id = Model.Categoria.IdCategoria, nombre = Model.Categoria.NombreCategoria, filter = 3, pageNumber = 1, showAll = false })" onchange="location.href=this.value;">Precio más bajo primero</option>
+
+		</select>
+	</div>
+		}
+	<div id="contenedor-productos" class="row justify-content-center">
+		@if (Model.Productos.Count() == 0)
+		{
+			<div class="col-12">
+				<img src="https://cdn-icons-png.freepik.com/512/5969/5969738.png" alt="confused"
+					 style="max-width: 130px; max-height: 130px;"
+					 class="mb-2 mx-auto d-block">
+				<h3 class="text-center">Estamos trabajando para agregar productos en esta categoría. ¡Vuelve pronto!</h3>
+			</div>
+			<div class="col-12">
+				<a class="boton-volver mt-4" id="div-volver-inicio"
+				   asp-controller="Home"
+				   asp-action="Tienda"
+				   style="text-decoration: none;">
+					<i class="fa-solid fa-left-long"></i> Volver al inicio
+				</a>
+			</div>
+
+			<div class="col-12">
+				<a class="boton-volver mt-0" id="div-volver-categorias"
+				   asp-controller="Categoria"
+				   asp-action="ListarCategorias"
+				   style="text-decoration: none;">
+					<i class="fa-solid fa-left-long"></i> Todas las categorías
+				</a>
+			</div>
+
+		}
+		else
+		{
+			@foreach (var c in Model.Productos)
+			{
+				<div class="col-6 col-md-4">
+					<a id="" class="producto-link-busqueda mt-2"
+					   style="display: flex; text-decoration: none; width:100% !important;"
+					   asp-controller="Producto"
+					   asp-action="GetProducto"
+					   asp-route-id="@c.IdProducto"
+					   asp-route-nombre="@c.NombreProducto"
+					   asp-route-idCategoria="@c.IdCategoria">
+
+						<div class="card w-100 w-md-auto" style="height: 250px;">
+							<div class="card-body d-flex flex-column">
+								<img id="imagenCategoria" src="@c.ImagenUrl" alt="@c.NombreProducto"
+									 style="max-width: 150px; max-height: 150px;"
+									 class="mx-auto d-block">
+							</div>
+							<div class="text-center mb-2" id="nombre_@c.IdProducto" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
+								<h5 id="precio_busqueda">₡@c.Precio</h5>
+							</div>
+							<div class="text-center mb-2 mt-2">
+								<h5 class="producto-link-texto">@c.NombreProducto</h5>
+							</div>
+						</div>
+					</a>
+				</div>
+			}
+		}
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+
+		window.onload = function() {
+			console.log(@Model.filter);
+		document.getElementById("selectCategoria").value = "@Url.Action("Index", "Categoria", new { id = Model.Categoria.IdCategoria, nombre = Model.Categoria.NombreCategoria, filter = Model.filter, pageNumber = 1, showAll = false })";
+		};
+
+
+	</script>
+} 

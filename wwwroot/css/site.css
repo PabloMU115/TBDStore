@@ -1,0 +1,685 @@
+html {
+    font-size: 12px;
+    position: relative;
+    min-height: 100%;
+    background-color: #1C2833;
+    color: #D5D8DC;
+    scrollbar-color: #34495E #1C2833;
+    scrollbar-width: thin;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #1C2833;
+    color: #D5D8DC;
+    padding-top: 70px;
+}
+
+.sb-sidenav {
+    margin-top: 70px; /* coloca el sidebar debajo del header */
+}
+#sidenav {
+	transition: width 0.3s ease;
+	overflow-x: hidden;
+	white-space: nowrap;
+}
+
+.sidenav-expanded {
+	width: 220px;
+}
+
+.sidenav-collapsed {
+	width: 60px;
+}
+
+.sidenav-collapsed h6,
+.sidenav-collapsed .link-text {
+	display: none;
+}
+
+.sticky-top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 14px;
+    width: 100%;
+    z-index: 1030; /* mayor que otros elementos para estar encima */
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #2980B9;
+}
+
+.navbar,
+.footer,
+.modal {
+    background-color: #1C2833 !important;
+    border-color: #34495E !important;
+    color: #D5D8DC;
+}
+
+.card,
+.form-control,
+.table {
+    background-color: #2C3E50;
+    color: #D5D8DC;
+    border-color: #34495E;
+}
+
+a.nav-link,
+a {
+    color: #D5D8DC;
+}
+
+.modal-content {
+    background-color: #2C3E50;
+    color: #D5D8DC;
+    border-color: #34495E;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: #34495E;
+}
+
+.modal-title {
+    color: #D5D8DC;
+}
+
+.modal-body {
+    color: #D5D8DC;
+}
+
+/* Scrollbar general para navegadores WebKit */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1C2833;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #34495E;
+    border-radius: 10px;
+    border: 2px solid #1C2833;
+}
+
+.producto-link,
+.producto-link-categoria {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-left: 10px;
+}
+
+.producto-link-texto {
+    color: #D5D8DC; /* color inicial */
+    transition: color 0.3s ease; /* transición suave de color */
+}
+
+    .producto-link-texto:hover,
+    .producto-link-texto:focus {
+        color: cornflowerblue !important;
+    }
+
+.producto-link:hover .card {
+    transform: scale(1.06);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease-in-out;
+}
+
+.producto-link-busqueda:hover .card {
+    transform: scale(1.04);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.1s ease-in-out;
+}
+
+#categoria-link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-left: 10px;
+}
+
+.categoria-link:hover .card {
+    transform: scale(1.06);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: lightblue;
+    color: black !important;
+    transition: all 0.1s ease-in-out;
+}
+
+/* Estilos del dropdown */
+.dropdown-menu {
+    background-color: #2C3E50;
+    border-color: #34495E;
+}
+
+.dropdown-item {
+    color: #D5D8DC !important;
+    background-color: #2C3E50 !important;
+}
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: #3E5C74 !important;
+        color: #ffffff !important;
+    }
+
+/* Color base del link */
+.navbar .nav-link {
+    color: #D5D8DC !important;
+}
+
+    /* Hover y cuando el dropdown está abierto */
+    .navbar .nav-link:hover,
+    .navbar .nav-link:focus,
+    .navbar .nav-link.show {
+        color: cornflowerblue !important;
+    }
+
+/* Base del botón */
+.custom-toggler {
+    border: none;
+    background-color: transparent;
+    width: 30px;
+    height: 24px;
+    position: relative;
+    z-index: 1001;
+}
+
+    /* Las tres líneas */
+    .custom-toggler .bar {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #D5D8DC;
+        position: absolute;
+        left: 0;
+        transition: all 0.3s ease-in-out;
+        border-radius: 2px;
+    }
+
+    /* Posiciones iniciales */
+    .custom-toggler .top-bar {
+        top: 0;
+    }
+
+    .custom-toggler .middle-bar {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .custom-toggler .bottom-bar {
+        bottom: 0;
+    }
+
+    /* Transformación a X cuando el botón está activo */
+    .custom-toggler:not(.collapsed) .top-bar {
+        top: 50%;
+        transform: rotate(45deg);
+    }
+
+    .custom-toggler:not(.collapsed) .middle-bar {
+        opacity: 0;
+    }
+
+    .custom-toggler:not(.collapsed) .bottom-bar {
+        top: 50%;
+        bottom: auto;
+        transform: rotate(-45deg);
+    }
+
+/* Por defecto (pantallas grandes): sin scroll horizontal */
+.contenedor-scroll {
+    overflow-x: visible;
+    margin-right: 5px;
+    overflow-y: visible;
+}
+
+/* En pantallas pequeñas (ej: móviles): activar scroll horizontal */
+@media (max-width: 768px) {
+    html {
+        font-size: 12px;
+    }
+
+    .contenedor-scroll {
+        overflow-x: scroll !important;
+    }
+
+    #nav-categorias {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #nav-mas {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .custom-product-layout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .getImagenProducto {
+        max-height: 50vh;
+    }
+
+    .producto-link {
+        width: 200px;
+    }
+
+    .producto-link-busqueda {
+        width: 180px !important;
+    }
+
+    .getProducto {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+
+    #div-texto-categoria {
+        height: 80px !important;
+        width: 180px;
+        margin-bottom: 10px;
+    }
+
+    #imagenCategoria {
+        height: 120px !important;
+        width: 120px;
+    }
+
+    #nav-mas {
+        width: 100%;
+    }
+
+    .sidenav {
+        display: none;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .custom-product-layout > .col-lg-8 { /* Imagen + datos */
+        order: 1;
+    }
+
+    #nav-categorias {
+        width: fit-content;
+        box-sizing: border-box;
+    }
+
+    .custom-product-layout > .col-12 { /* Descripción */
+        order: 2;
+    }
+
+    .custom-product-layout > .col-lg-4 { /* Controles de compra */
+        order: 3;
+    }
+
+    .producto-link-busqueda {
+        margin-top: 10px !important;
+    }
+
+    #formulario-container {
+        max-width: 75vw !important;
+    }
+}
+
+
+#div-texto-categoria {
+    height: 40px !important;
+    margin-top: 5px;
+}
+
+
+/* Estilo por defecto */
+#nav-categorias {
+    transition: background-color 0.3s ease;
+    background-color: inherit;
+}
+
+    #nav-categorias:hover #textoCategoria {
+        color: black !important; /* Cambia el color del texto al hacer hover en el UL */
+        background-color: lightskyblue;
+        box-shadow: 2px 8px rgba(0,0,0,0.5);
+    }
+
+/* Estilo por defecto */
+#nav-mas {
+    transition: background-color 0.3s ease;
+    background-color: inherit;
+    width: 300px;
+}
+
+    #nav-mas:hover #textoCategoria {
+        color: black !important; /* Cambia el color del texto al hacer hover en el UL */
+        background-color: lightskyblue;
+        box-shadow: 2px 8px rgba(0,0,0,0.5);
+    }
+
+#texto-volver {
+    font-size: 14px;
+    text-align: center;
+    width: 100vw;
+}
+
+.boton-volver,
+.boton-todos,
+.btn-paginacion {
+    display: block; /* Asegura que esté en modo bloque */
+    border: 1px solid;
+    border-radius: 8px;
+    text-align: center;
+    padding: 5px;
+    width: 170px;
+    margin: 10px auto; /* agrega separación vertical */
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+    .boton-volver:hover,
+    .boton-todos:hover,
+    .btn-paginacion {
+        background-color: lightskyblue;
+    }
+
+    .boton-volver:hover,
+    .boton-todos:hover,
+    .btn-paginacion {
+        color: black !important;
+    }
+
+.pagination .page-item .page-link {
+    min-width: 50px; /* ancho mínimo por botón */
+    text-align: center;
+}
+
+input.form-control {
+    flex: 1 1 auto;
+    box-sizing: border-box; /* para que padding/border no alteren tamaño */
+    transition: none; /* evitar transiciones que afecten tamaño */
+}
+
+    input.form-control:focus {
+        outline: none; /* o el estilo que quieras sin afectar tamaño */
+        box-shadow: none; /* evita que la sombra cambie el tamaño visual */
+    }
+
+.btn:focus,
+.btn:active {
+    background-color: dodgerblue !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.btn:hover {
+    background-color: blue !important;
+    color: white;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Contenedor principal */
+#producto-card {
+    background-color: #1C2833; /* Más oscuro para mejor contraste general */
+    color: #FDFEFE; /* Blanco puro para máxima legibilidad */
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Sombra más definida */
+    max-width: 300px;
+    border: 1px solid #566573; /* Borde sutil que separa visualmente */
+    max-height: 700px;
+}
+
+.divRecomendados {
+    width: 200px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    background-color: lightslategray;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+/* Texto de precio y stock */
+#precio,
+#stock {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #F9E79F; /* Amarillo suave para resaltar */
+}
+
+/* Etiqueta */
+#cantidad-label {
+    font-weight: 500;
+    color: #D6DBDF;
+}
+
+/* Contenedor de input y botones */
+#cantidad-control {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Botones + y - */
+#btn-minus,
+#btn-plus {
+    background-color: #F39C12; /* Naranja vibrante */
+    color: #1C2833;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+    #btn-minus:hover,
+    #btn-plus:hover {
+        background-color: #D68910; /* Naranja vibrante */
+        color: #FFFFFF;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+/* Input de cantidad */
+#cantidad-input {
+    width: 80px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ABB2B9;
+    text-align: center;
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    font-weight: 600;
+}
+
+/* Botón de comprar */
+#btn-comprar {
+    background-color: #E74C3C; /* Rojo vibrante */
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+}
+
+#btn-comprar:hover {
+    background-color: #1ABC9C; /* verde azulado */
+    color: #FFFFFF;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilos personalizados para el formulario de producto */
+
+#formulario-container {
+    background-color: #2C3E50;
+    border-radius: 8px;
+    max-width: 100% !important;
+}
+
+#formulario-producto .form-label {
+    font-weight: 600;
+    color: inherit;
+}
+
+#formulario-producto .form-control {
+    background-color: aliceblue;
+    color: black;
+    border-radius: 6px;
+}
+
+#formulario-categoria .form-label {
+    font-weight: 600;
+    color: inherit;
+}
+
+#formulario-categoria .form-control {
+    background-color: aliceblue;
+    color: black;
+    border-radius: 6px;
+}
+
+#formulario-proveedor .form-label {
+    font-weight: 600;
+    color: inherit;
+}
+
+#formulario-proveedor .form-control {
+    background-color: aliceblue;
+    color: black;
+    border-radius: 6px;
+}
+
+#btn-guardar {
+    width: 50%;
+    margin: 0 auto;
+    display: block;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #28a745;
+    border: none;
+    border-radius: 6px;
+    color: white;
+}
+
+    #btn-guardar:hover {
+        background-color: #218838;
+    }
+
+.dataTables_length select {
+    color: black; /* Cambia el color del texto del <select> visible */
+    background-color: white !important; /* Cambia el fondo del <select> visible */
+}
+
+
+.dataTables_filter input {
+    color: white;
+    background-color: #222; /* Opcional: ajusta el fondo si usas tema oscuro */
+    border: 1px solid #555; /* Opcional: mejora la visibilidad */
+}
+
+.dataTables_filter input:focus {
+    color: black; /* Cambia 'white' al color que quieras */
+    background-color: white !important; /* Opcional: ajusta el fondo si usas tema oscuro */
+    border: 1px solid #555; /* Opcional: mejora la visibilidad */
+}
+
+.tr-tabla, 
+a {
+    font-size: 15px !important;
+    text-align: center !important;
+}
+
+.tr-tabla:hover{
+    background-color: cadetblue !important;
+    color: white !important;
+    transition: background-color 0.3s ease;
+}
+
+.btn-editarProducto,
+.btn-eliminarProducto,
+.btn-editarCategoria,
+.btn-eliminarCategoria,
+.btn-editarProveedor,
+.btn-eliminarProveedor {
+    width: 40%;
+    border-radius: 4px;
+    border: 0px;
+}
+
+    .btn-editarProducto:hover,
+    .btn-editarCategoria:hover,
+    .btn-editarProveedor:hover {
+        color: #ffae00;
+        background-color: white;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-eliminarProducto:hover,
+    .btn-eliminarCategoria:hover,
+    .btn-eliminarProveedor:hover {
+        color: red;
+        background-color: white;
+        transition: background-color 0.3s ease;
+    }
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+}
+.error-text {
+    color: navajowhite;
+    font-size: 15px;
+    text-decoration:underline;
+}
+
+.formIdentity {
+    max-width: 500px;
+    width: 100%;
+    justify-self: center !important;
+    background-color: #2C3E50;
+}
+
+.form-control {
+    background-color: aliceblue;
+    color: black;
+}
+
+.register-form-label {
+    color: black;
+}
+
+#registerSubmit:hover,
+.registerLogin:hover {
+    background-color: #1b6e4a !important;
+    color: white !important;
+    border-color: #1b6e4a !important;
+}
+
