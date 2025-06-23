@@ -44,9 +44,9 @@ namespace TBD.Controllers.ApiControllers
             var item = await _context.ListaDeseos.FirstOrDefaultAsync(
                 p => p.IdProducto.Equals(id) && p.IdUsuario.Equals(idUsuario));
 
-            if (item == null) 
+            if (item == null)
             {
-                return NotFound();
+                return NotFound(new { result = false });
             }
 
             return Ok( new { result = true, item});
@@ -61,7 +61,7 @@ namespace TBD.Controllers.ApiControllers
             
             if (i == null)
             {
-                return NotFound();
+                return NotFound(new { result = false });
             }
 
             _context.ListaDeseos.Remove(i);

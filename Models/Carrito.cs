@@ -18,7 +18,7 @@ namespace TBD.Models
 
         // Clave foránea a Usuario
         [Required]
-        [StringLength(20)]
+        [StringLength(255)]
         public string IdUsuario { get; set; }
 
         [ForeignKey(nameof(IdUsuario))]
@@ -26,7 +26,7 @@ namespace TBD.Models
 
         // Clave foránea a Producto
         [Required]
-        [StringLength(20)]
+        [StringLength(255)]
         public string IdProducto { get; set; }
 
         [ForeignKey(nameof(IdProducto))]
