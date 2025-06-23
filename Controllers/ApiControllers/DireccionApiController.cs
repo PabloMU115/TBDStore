@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TBD.Data;
@@ -13,10 +14,13 @@ namespace TBD.Controllers.ApiControllers
     public class DireccionApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Usuario> _userManager;
 
-        public DireccionApiController(ApplicationDbContext context) 
+        public DireccionApiController(ApplicationDbContext context,
+            UserManager<Usuario> userManager)
         {
-        _context = context;
+            _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet("{id}")]
@@ -35,6 +39,7 @@ namespace TBD.Controllers.ApiControllers
         [HttpPost]
         public async Task<IActionResult> CrearDireccion([FromBody] DireccionCreate d) 
         {
+            var idUsuario = _userManager.GetUserId(User);
             var direccion = new Direccion 
             {
                 IdDireccion = Guid.NewGuid()+"",
@@ -42,7 +47,7 @@ namespace TBD.Controllers.ApiControllers
                 CedulaUsuario = d.cedula,
                 NumeroUsuario = d.numero,
                 DetallesDireccion = d.detalles,
-                IdUsuario = d.idUsuario
+                IdUsuario = idUsuario
             };
 
             await _context.Direcciones.AddAsync(direccion);

@@ -35,5 +35,6 @@ namespace TBD.Data
         public DbSet<Carrito> Carrito { get; set; }
         public DbSet<WishList> ListaDeseos { get; set; }
         public DbSet<Direccion> Direcciones { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }

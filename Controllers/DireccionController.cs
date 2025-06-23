@@ -1,14 +1,30 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TBD.Data;
+using TBD.Models;
 
 namespace TBD.Controllers
 {
     public class DireccionController : Controller
-    {  
-        [Route("Direcciones")]
-        public ActionResult GestionarDirecciones()
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<Usuario> _userManager;
+
+        public DireccionController(ApplicationDbContext context,
+            UserManager<Usuario> userManager)
         {
-            return View();
+            _context = context;
+            _userManager = userManager;
+        }
+
+        [Route("Direcciones")]
+        public async Task<ActionResult> GestionarDirecciones()
+        {
+            var user = _userManager.GetUserId(User);
+            var direcciones = _context.Direcciones.Where(p => p.IdUsuario == user).ToList();
+            return View(direcciones);
         }
     }
 }
