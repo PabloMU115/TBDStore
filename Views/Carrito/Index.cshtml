@@ -1,0 +1,64 @@
+﻿@using TBD.Models.ViewModels;
+@model List<CarritoViewModel>
+@{
+    ViewData["Title"] = "Index";
+    decimal total = 0;
+}
+
+@if (Model.Count() == 0)
+{
+    <h3>El carrito se encuentra vacío</h3>
+}
+else
+{
+    //Recordar pulir la vista en movil 23/06
+    @foreach (var c in Model)
+    {
+        {
+            total += c.PrecioProducto * c.CantidadProducto;
+        }
+        <div class="carrito-item">
+            <div style="display: flex; flex-direction: column; align-items: center; width:130px; height:130px;">
+                <img style="width:100px; height:100px;" src="@c.ImagenProducto" class="carrito-img" alt="Imagen de @c.NombreProducto" />
+            </div>
+
+            <div class="carrito-info">
+                <div>
+                    <h3>@c.NombreProducto</h3>
+                    <h4>Stock: @c.StockProducto</h4>
+                    <h4>₡@(c.PrecioProducto * c.CantidadProducto)</h4>
+                </div>
+
+                <div class="cantidad-control">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <h5 style="margin-bottom: 5px;">Cantidad:</h5>
+                        <div id="cantidad-control" class="cantidad-control">
+                            <button id="btn-minus" onclick="minus('@c.IdProducto')">-</button>
+                            <input type="number" id="@c.IdProducto" name="cantidad" min="0" max="@c.StockProducto" value="@c.CantidadProducto" />
+                            <button id="btn-plus" onclick="plus('@c.IdProducto')">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-eliminarItem btn-danger">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+
+    }
+    <h1>Total = ₡@total</h1>
+}
+
+@section scripts {
+    <script>
+        function plus(id) {
+          document.getElementById(id).stepUp(1);
+        }
+
+        function minus(id) {
+          document.getElementById(id).stepDown(1);
+        }
+    </script>
+}
+

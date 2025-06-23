@@ -683,3 +683,63 @@ a {
     border-color: #1b6e4a !important;
 }
 
+.btn-eliminarItem {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border: 0px;
+}
+
+    .btn-eliminarItem:hover {
+        color: red;
+        background-color: white;
+        transition: background-color 0.3s ease;
+    }
+
+.carrito-item {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.carrito-img {
+    max-height: 150px;
+    max-width: 150px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    object-fit: cover;
+}
+
+.carrito-info {
+    flex: 1;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.btn-eliminarItem {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+    .cantidad-control input {
+        width: 60px;
+        text-align: center;
+    }
