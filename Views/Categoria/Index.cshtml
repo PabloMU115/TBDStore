@@ -33,7 +33,7 @@
 		</select>
 	</div>
 		}
-	<div id="contenedor-productos" class="row justify-content-center">
+	<div id="contenedor-productos" class="row justify-content-center" style="margin-bottom: 80px;">
 		@if (Model.Productos.Count() == 0)
 		{
 			<div class="col-12">
@@ -65,7 +65,7 @@
 		{
 			@foreach (var c in Model.Productos)
 			{
-				<div class="col-6 col-md-4">
+				<div class="col-6 col-md-4 mt-2">
 					<a id="" class="producto-link-busqueda mt-2"
 					   style="display: flex; text-decoration: none; width:100% !important;"
 					   asp-controller="Producto"

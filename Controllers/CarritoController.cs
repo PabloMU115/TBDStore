@@ -31,6 +31,7 @@ namespace TBD.Controllers
                          StockProducto = p.StockDisponible,
                          PrecioProducto = p.Precio,
                          ImagenProducto = p.ImagenUrl,
+                         IdCategoria = p.IdCategoria,
                          CantidadProducto = c.Cantidad
                      }).ToList();
             return View(items);

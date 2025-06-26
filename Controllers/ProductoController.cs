@@ -33,8 +33,8 @@ namespace TBD.Controllers
                                  Descripcion = p.Descripcion,
                                  StockDisponible = p.StockDisponible,
                                  ImagenUrl = p.ImagenUrl,
-                                 IdProveedor = p.IdProveedor,
-                                 IdCategoria = p.IdCategoria
+                                 IdProveedor = proveedor.IdProveedor,
+                                 IdCategoria = categoria.IdCategoria
                              }).OrderBy(x => Guid.NewGuid()).Take(10).ToList();
 
             var productoQuery = (from p in _context.Productos
@@ -51,8 +51,8 @@ namespace TBD.Controllers
                                      Imagen = p.ImagenUrl,
                                      Proveedor = proveedor.NombreProveedor,
                                      Categoria = categoria.NombreCategoria,
-                                     IdProveedor = p.IdProveedor,
-                                     IdCategoria = p.IdCategoria,
+                                     IdProveedor = proveedor.IdProveedor,
+                                     IdCategoria = categoria.IdCategoria,
                                      lista = productos
                                  }).FirstOrDefault();
 

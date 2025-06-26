@@ -20,6 +20,22 @@ namespace TBD.Controllers.ApiControllers
             _userManager = userManager;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> consultarItem(string id) 
+        {
+            var idUsuario = _userManager.GetUserId(User);
+            Carrito item = _context.Carrito.FirstOrDefault(p => 
+            p.IdProducto.Equals(id) &&
+            p.IdUsuario.Equals(idUsuario));
+
+            if (item == null)
+            {
+                return NotFound(new { result = false });
+            }
+
+            return Ok(new { result = true});
+        }
+
         [HttpPost]
         public async Task<IActionResult> añadirAlCarrito([FromBody] CarritoCreate c)
         {
@@ -36,34 +52,44 @@ namespace TBD.Controllers.ApiControllers
             return Ok(new { result = true});
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> modificarCantidad(string id, [FromBody] CarritoUpdate carrito) 
         {
-            var idUsuario = "4448fa3d-d307-4160-a507-8f8b166857ff";
-            //var idUsuario = _userManager.GetUserId(User);
+            var idUsuario = _userManager.GetUserId(User);
             var item = await _context.Carrito.FirstOrDefaultAsync(p => 
             p.IdProducto.Equals(id) &&
             p.IdUsuario.Equals(idUsuario));
+
+            var cantidad = (from p in _context.Productos 
+                            where p.IdProducto.Equals(item.IdProducto) 
+                            select new Producto 
+                            {
+                                StockDisponible = p.StockDisponible
+                            }).FirstOrDefault().StockDisponible;
 
             if (item == null) 
             {
                 return NotFound(new { result = false });
             }
 
-            item.Cantidad = carrito.cantidad;
-            _context.Carrito.Update(item);
+            if ((item.Cantidad + carrito.cantidad) <= cantidad)
+            {
+                item.Cantidad += carrito.cantidad;
+            }
+            else 
+            {
+                item.Cantidad = cantidad;
+            }
+                _context.Carrito.Update(item);
             await _context.SaveChangesAsync();
 
             return Ok(new { result = true});
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> eliminarItem(string id) 
         {
-            var idUsuario = "4448fa3d-d307-4160-a507-8f8b166857ff";
-            //var idUsuario = _userManager.GetUserId(User);
+            var idUsuario = _userManager.GetUserId(User);
             var item = await _context.Carrito.
                 FirstOrDefaultAsync(p => p.IdUsuario.Equals(idUsuario) && 
                 p.IdProducto.Equals(id));

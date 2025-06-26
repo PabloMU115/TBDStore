@@ -9,6 +9,7 @@ namespace TBD.Models.ViewModels
         public decimal PrecioProducto { get; set; }
         public int StockProducto { get; set; }
         public string ImagenProducto { get; set; }
+        public string IdCategoria { get; set; }
         public int CantidadProducto { get; set; }
     }
 }

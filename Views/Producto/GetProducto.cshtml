@@ -1,4 +1,6 @@
 ﻿@using TBD.Models.ViewModels
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Usuario> UserManager
 @model ProductoViewModel
 
 <div class="d-flex align-items-center flex-wrap gap-2 mt-2">
@@ -18,6 +20,11 @@
 	<h4 class="mb-0">/@Model.Nombre</h4>
 </div>
 
+<!-- El mensaje de alerta -->
+<div id="alert" class="alert">
+	<div><h2 id="label-alert">Producto añadido al carrito!</h2></div>
+	<span class="close-btn" onclick="closeAlert()">x</span>
+</div>
 
 <div class="getProducto row g-4 p-4 mx-0 custom-product-layout mt-2"
 	 style="">
@@ -27,7 +34,7 @@
 		<!-- Imagen -->
 		<div id="getImagenProducto" class="col-md-5 d-flex justify-content-center align-items-center mb-0">
 			<img src="@Model.Imagen" class="h-100"
-				 style="max-width: 100% !important; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"
+				 style="min-height: 300px !important; min-width: 300px !important; max-height: 300px !important; max-width: 300px !important; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"
 				 alt="Imagen de @Model.Nombre" />
 		</div>
 
@@ -56,7 +63,7 @@
 
 			<div id="cantidad-control" class="cantidad-control">
 				<button id="btn-minus" onclick="minus()">-</button>
-				<input type="number" id="cantidad-input" name="cantidad" min="0" max="@Model.Stock" value="0" />
+				<input type="number" id="cantidad-input" name="cantidad" min="1" max="@Model.Stock" value="1" oninput="check()"/>
 				<button id="btn-plus" onclick="plus()">+</button>
 			</div>
 
@@ -64,16 +71,18 @@
 
 			<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
 
-			<button id="btn-comprar" class="btn-comprar" onclick="">
+			<button id="btn-comprar" class="btn-comprar" onclick="añadirAlCarrito('@Model.Id')">
 				<i class="fa-solid fa-cart-shopping"></i> Añadir al carrito
 			</button>
 		</div>
 	</div>
 </div>
+
+
 @if (Model.lista.Count() > 0)
 {
 	<div class="getProducto row g-4 mx-0 custom-product-layout mt-2"
-		 style="border-radius: 8px; color: #1C2833; margin-left: 40px !important; margin-right: 40px !important;">
+		 style="border-radius: 8px; color: #1C2833; margin-left: 10px !important; margin-right: 40px !important;">
 		<h3 style="color: ghostwhite;">Productos recomendados:</h3>
 		<div style="position: relative; width: 100%; overflow: hidden;">
 			<!-- Contenedor scroll -->
@@ -119,5 +128,133 @@
 		function minus() {
 		  document.getElementById("cantidad-input").stepDown(1);
 		}
-	</script>
+
+		function añadirAlCarrito(id){
+			const cantidad = document.getElementById("cantidad-input").value;
+			buscar(id).then(resultado => {
+				if(!resultado){
+					crear(id, cantidad);
+				}
+				else{
+					editar(id, cantidad);
+				}
+
+			});
+		}
+
+		function crear(id, cantidad){
+			fetch("/api/carritoapi/", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						credentials: 'include',
+						body: JSON.stringify({
+							IdUsuario: '@UserManager.GetUserId(User)',
+							IdProducto: id,
+							cantidad: parseInt(cantidad)
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						openAlert("Producto añadido al carrito!");
+					})
+					.catch(error => {
+						console.error("Error al hacer POST:", error);
+					});
+		}
+
+		function editar(id, cantidad){
+			fetch("/api/carritoapi/"+id, {
+						method: "PUT",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						credentials: 'include',
+						body: JSON.stringify({
+							IdUsuario: '@UserManager.GetUserId(User)',
+							IdProducto: id,
+							cantidad: parseInt(cantidad)
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						openAlert("Carrito actualizado!");
+					})
+					.catch(error => {
+						console.error("Error al hacer PUT:", error);
+					});
+		}
+
+		function buscar(id) {
+			return fetch("/api/carritoapi/" + id, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: 'include',
+			})
+			.then(response => {
+				// Verificar si la respuesta fue exitosa
+				if (!response.ok) {
+					// Si no es 2xx (éxito), manejar el error, como el 404 (Not Found)
+					throw new Error('Error: ' + response.status + ' - ' + response.statusText);
+				}
+				return response.json(); // Si la respuesta es exitosa, procesamos el JSON
+			})
+			.then(data => {
+				console.log('Datos recibidos:', data);
+				return true;  // Puedes hacer algo con los datos aquí
+			})
+			.catch(error => {
+				console.error("Error al hacer GET:", error);
+				// Si ocurre un error, como un 404, manejarlo aquí
+				if (error.message.includes("404")) {
+					// O lo que desees hacer en caso de no encontrar el recurso
+				}
+				return false;  // Retorna false si hay error
+			});
+		}
+
+
+		// Función para abrir el alert con efecto fade
+		function openAlert(mensaje) {
+		  var alert = document.getElementById("alert");
+		  var boton = document.getElementById("btn-comprar");
+		  document.getElementById("label-alert").innerHTML = mensaje;
+		  boton.disabled = true;
+		  boton.innerHTML= "<i class='fa-regular fa-circle-check'></i> Producto añadido al carrito!";
+		  alert.style.display = "block";  // Asegura que se muestre
+		  setTimeout(function() {
+			alert.classList.add("show"); // Añade la clase 'show' para activar el fade
+		  }, 10); // Breve retraso para aplicar la transición
+
+		  // Cerrar el alert automáticamente después de 3 segundos
+		  setTimeout(function() {
+			closeAlert();
+			boton.disabled = false;
+			boton.innerHTML= "<i class='fa-solid fa-cart-shopping'></i> Añadir al carrito";
+		  }, 2500); // 3000 ms = 3 segundos
+		}
+
+		// Función para cerrar el alert
+		function closeAlert() {
+		  var alert = document.getElementById("alert");
+		  alert.classList.remove("show"); // Remueve la clase 'show' para desvanecer
+		  setTimeout(function() {
+			alert.style.display = "none"; // Oculta el alert después del fade
+		  }, 500); // Tiempo igual a la duración del fade
+		}
+
+		function check(){
+			const input = document.getElementById("cantidad-input");
+			if(parseInt(input.value) > input.max){
+				input.value = input.max;
+			}
+
+			if(parseInt(input.value) < 1){
+				input.value = 1;
+			}
+		}
+  </script>
 }
