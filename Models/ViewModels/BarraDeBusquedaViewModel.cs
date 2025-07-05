@@ -4,11 +4,11 @@ using TBD.Data;
 
 namespace TBD.Models.ViewModels
 {
-    public class ListarCategoriasViewComponent : ViewComponent
+    public class BarraDeBusquedaViewComponent : ViewComponent
     {
         private readonly ApplicationDbContext _context;
 
-        public ListarCategoriasViewComponent(ApplicationDbContext context)
+        public BarraDeBusquedaViewComponent(ApplicationDbContext context)
         {
             _context = context;
         }

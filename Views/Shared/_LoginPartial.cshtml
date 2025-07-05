@@ -11,10 +11,9 @@
 	}
 	var urlActual = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
 }
-<ul class="navbar-nav">
 	@if (SignInManager.IsSignedIn(User))
 	{
-		<li class="nav-item dropdown">
+		<div class="dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="logDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 				@nombre.Split(" ")[0] > <i class="fa-solid fa-user"></i>
 			</a>
@@ -28,7 +27,7 @@
 					</form>
 				</li>
 			</ul>
-		</li>
+		</div>
 	}
 	else
 	{
@@ -38,4 +37,3 @@
 			<a class="registerLogin btn btn-success m-1" asp-area="Identity" asp-page="/Account/Login">Inciar Sesión</a>
 		}
 	}
-</ul>

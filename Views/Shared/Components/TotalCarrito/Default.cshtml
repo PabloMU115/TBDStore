@@ -1,0 +1,12 @@
+﻿@using TBD.Models;
+@using TBD.Models.ViewModels;
+@model int
+@{
+}
+<a class="nav-link position-relative" asp-controller="Carrito" asp-action="Index" aria-expanded="false">
+	<i class="fa-solid fa-cart-shopping fa-lg"></i>
+	<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+		<label id="cant">@Model</label>
+		<span class="visually-hidden">items en carrito</span>
+	</span>
+</a>

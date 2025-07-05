@@ -215,7 +215,7 @@ namespace TBD.Controllers
                                   NombreCategoria = c.NombreCategoria
                               }).ToList();
 
-            List<int> cantidadProductos = new List<int>( new int[categorias.Count()]);
+            List<int> cantidadProductos = new List<int>(new int[categorias.Count()]);
             int apuntador = 0;
             foreach (var c in categorias)
             {

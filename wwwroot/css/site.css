@@ -40,13 +40,15 @@ body {
 .sticky-top-navbar {
     position: fixed;
     top: 0;
-    left: 0;
-    font-size: 14px;
     width: 100%;
     z-index: 1030; /* mayor que otros elementos para estar encima */
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus, 
+.btn:active:focus, 
+.btn-link.nav-link:focus, 
+.form-control:focus, 
+.form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #2980B9;
 }
 
@@ -235,7 +237,7 @@ a {
 /* Por defecto (pantallas grandes): sin scroll horizontal */
 .contenedor-scroll {
     overflow-x: visible;
-    margin-right: 5px;
+    margin-right: 10px;
     overflow-y: visible;
 }
 
@@ -264,14 +266,15 @@ a {
     #formulario-container {
         max-width: 75vw !important;
     }
+    .search-bar {
+        margin-top: 0; /* Remueve el margen superior en pantallas grandes */
+    }
 }
-
 
 #div-texto-categoria {
     height: 40px !important;
     margin-top: 5px;
 }
-
 
 /* Estilo por defecto */
 #nav-categorias {
@@ -848,11 +851,37 @@ a {
             color: #ccc;
     }
 
+#search-items {
+    width: 50%;
+}
+
+.btn-busqueda {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top: 0px;
+    border-bottom:0px;
+    border-left: none;
+    background-color: lightblue;
+    transition: background-color 0.3s ease;
+}
+
+.btn-busqueda:hover {
+    background-color: dodgerblue !important;
+}
+
 
 /* En pantallas pequeñas (ej: móviles): activar scroll horizontal */
 @media (max-width: 768px) {
     html {
         font-size: 12px;
+    }
+
+    #main-container {
+    margin-top: 50px;
+    }
+
+    #search-items {
+        display: none;
     }
 
     .contenedor-scroll {

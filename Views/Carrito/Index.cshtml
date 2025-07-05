@@ -60,7 +60,7 @@ else
 							<div id="cantidad-control" class="cantidad-control">
 								@if (c.CantidadProducto > 1)
 								{
-									<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto')">-</button>
+									<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">-</button>
 								}
 								else
 								{
@@ -105,6 +105,7 @@ else
 @section scripts {
 	<script>
 		function plus(id) {
+			var carrito = document.getElementById("cant");
 			var input = document.getElementById(id);
 			const spinner = document.getElementById('spinner-' + id);
 			var cantidadTotal = document.getElementById("cantidad-items-carrito");
@@ -132,6 +133,7 @@ else
 				.then(response => response.json())
 				.then(data => {
 					setTimeout(() => {
+					carrito.innerHTML = parseInt(carrito.innerHTML)+ 1;
 					var unitario = document.getElementById("unitario_"+id).innerHTML.split("₡")[1];
 					var cantidad = input.value;
 					var total = document.getElementById("total_"+id);
@@ -145,7 +147,7 @@ else
 					spinner.style.display = 'none';
 					botonMinus.disabled = false;
 					botonPlus.disabled = false;
-				  }, 500);
+				  }, 900);
 				})
 				.catch(error => {
 					console.error("Error al hacer PUT:", error);
@@ -158,6 +160,7 @@ else
 
 		function minus(id, nombre, categoria) {
 			var input = document.getElementById(id);
+			var carrito = document.getElementById("cant");
 			const spinner = document.getElementById('spinner-' + id);
 			var cantidadTotal = document.getElementById("cantidad-items-carrito");
 			var resta = 0;
@@ -172,6 +175,7 @@ else
 				spinner.style.display = 'flex';
 				botonMinus.disabled = true;
 				botonPlus.disabled = true;
+				if(parseInt(input.value) > input.min){
 				fetch("/api/carritoapi/"+id, {
 					method: "PUT",
 					headers: {
@@ -184,6 +188,7 @@ else
 				.then(response => response.json())
 				.then(data => {
 					setTimeout(() => {
+					carrito.innerHTML = parseInt(carrito.innerHTML) - 1;
 					var unitario = document.getElementById("unitario_"+id).innerHTML.split("₡")[1];
 					var cantidad = input.value;
 					var total = document.getElementById("total_"+id);
@@ -197,11 +202,12 @@ else
 					spinner.style.display = 'none';
 					botonMinus.disabled = false;
 					botonPlus.disabled = false;
-				  }, 500);
+				  }, 900);
 				})
 				.catch(error => {
 					console.error("Error al hacer PUT:", error);
 				});
+				}
 			}
 			if(parseInt(input.value) === 1){
 				document.getElementById("btn-minus-"+id).innerHTML = "<i class='fa-solid fa-trash-can'></i>";
@@ -212,20 +218,19 @@ else
 		}
 
 		function eliminar(id, nombre, categoria){
-			console.log("Producto a eliminar:", id);
-			console.log("Nombre del producto:", nombre);
-			console.log("ID de la categoría:", categoria);
+			var carrito = document.getElementById("cant");
 			var div = document.getElementById("item-" + id);
 			const spinner = document.getElementById('spinner-eliminar-' + id);
 			var cantidadIndividual = document.getElementById(id);
-			if(cantidadIndividual === 0){
-				cantidadIndividual = 1;
+			if(parseInt(cantidadIndividual.value) === 0){
+				cantidadIndividual.value = 1;
 			}
 			var cantidadTotal = document.getElementById("cantidad-items-carrito");
 			var resta = 0;
 
 			 // deshabilita el div
 			 div.style.pointerEvents = "none";
+			 var cont = "<h5><a class='' id='" + nombre + "' href='/Tienda/Item/" + categoria + "-" + id + "-" + nombre + "'>" + nombre + "</a> ha sido removido del carrito.</h5>";
 
 			 // Muestra el spinner
 			 spinner.style.display = 'flex';
@@ -243,6 +248,7 @@ else
 						setTimeout(() => {
 						var total = document.getElementById("total_"+id);
 						var subtotal = document.getElementById("precioSubtotal");
+						carrito.innerHTML = parseInt(carrito.innerHTML) - parseInt(cantidadIndividual.value);
 						resta = parseInt(cantidadTotal.innerHTML)-parseInt(cantidadIndividual.value);
 						cantidadTotal.innerHTML = resta + " items";
 						if(resta === 0){
@@ -251,7 +257,7 @@ else
 						}
 						subtotal.innerHTML = parseFloat(subtotal.innerHTML)-parseFloat(total.innerHTML.split("₡")[1]);
 						div.style.pointerEvents = "";
-						div.innerHTML = "<h5><a class='' id='" + nombre + "' href='/Tienda/Item/" + categoria + "-" + id + "-" + nombre + "'>" + nombre + "</a> ha sido removido del carrito.</h5>";
+						div.innerHTML = cont;
 					  }, 1000);
 					})
 					.catch(error => {

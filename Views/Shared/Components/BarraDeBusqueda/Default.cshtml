@@ -1,0 +1,28 @@
+﻿@using TBD.Models.ViewModels
+@using Microsoft.AspNetCore.Identity
+@model List<CategoriaViewModel>
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+@if (!User.IsInRole("admin"))
+{
+	@if (Model.Count() > 0)
+	{
+
+		<select name="idCategoria" class="form-select" style="border-radius:0px; width:150px;">
+			<option selected value="">Todas Las Categorías</option>
+			@foreach (var c in Model)
+			{
+				<option value="@c.IdCategoria">@c.NombreCategoria</option>
+			}
+		</select>
+		<input type="text" id="busqueda" name="busqueda" class="form-control bg-light" placeholder="Buscar..." style="border:0px; border-radius:0px; color:black;" />
+		<button class="btn-busqueda px-3" type="submit">
+			<i class="fa-solid fa-magnifying-glass"></i>
+		</button>
+	}
+	else
+	{
+		<h2>No disponible</h2>
+	}
+}

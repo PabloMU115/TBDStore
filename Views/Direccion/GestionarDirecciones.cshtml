@@ -1,14 +1,23 @@
 ﻿@model List<Direccion>
 @{
 }
+<div style="width: 100%; border: 1px solid black;">
+	<div>
+
+	</div>
 @if(Model.Count() > 0)
 {
-	@foreach (var p in Model)
-	{
-		<h2>@p.NombreUsuario</h2>
-	}
+		@foreach (var p in Model)
+		{
+			<div>
+				<div>
+					<h2>@p.NombreUsuario</h2>
+				</div>
+			</div>
+		}
 }
 else
 {
 	<h3>No posee direcciones</h3>
 }
+	</div>

@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using TBD.Models;
+@using TBD.Models.ViewModels;
 @inject SignInManager<Usuario> SignInManager
 @inject UserManager<Usuario> UserManager
 @{
@@ -24,59 +26,49 @@
 
 </head>
 <body>
-	<header class="sticky-top-navbar">
-		<nav class="navbar navbar-expand-sm border-bottom box-shadow">
-			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Tienda">
-					<img src="~/images/logo.png" alt="Logo home" width="100">
-				</a>
-				<button class="navbar-toggler collapsed custom-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="bar top-bar"></span>
-					<span class="bar middle-bar"></span>
-					<span class="bar bottom-bar"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav flex-grow-1">
-						@if (User.IsInRole("admin"))
-						{
-							<!-- Dropdown de Productos -->
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" id="productosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-									Acciones
-								</a>
-								<ul class="dropdown-menu" aria-labelledby="productosDropdown">
-									<li><a class="dropdown-item" asp-controller="Producto" asp-action="GestionarProductos">Gestionar Productos</a></li>
-									<li><a class="dropdown-item" asp-controller="Categoria" asp-action="GestionarCategorias">Gestionar Categorias</a></li>
-									<li><a class="dropdown-item" asp-controller="Proveedor" asp-action="GestionarProveedores">Gestionar Proveedores</a></li>
-									@* <li><a class="dropdown-item" asp-controller="Producto" asp-action="Index" asp-route-categoria="ropa">Ropa</a></li>
-								<li><a class="dropdown-item" asp-controller="Producto" asp-action="Index" asp-route-categoria="juguetes">Juguetes</a></li> *@
-								</ul>
-							</li>
-						}
-						<li class="nav-item">
-							<a class="nav-link" asp-controller="Direccion" asp-action="GestionarDirecciones">Gestionar Direcciones</a>
-						</li>
-					</ul>
-					<ul class="navbar-nav ms-auto">
-						<a class="nav-link" asp-controller="Carrito" asp-action="Index" aria-expanded="false">
-							<i class="fa-solid fa-cart-shopping"></i>
-						</a>
-						<!-- Login / cuenta -->
-						<li class="nav-item">
-							<partial name="_LoginPartial"/>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-	</header>
-	@if (!urlActual.Contains("Identity"))
-	{
-		@await Component.InvokeAsync("ListarCategorias")
-	}
-	<div class="container-fluid mx-0 px-0">
+    <header class="sticky-top-navbar">
+        <nav class="navbar border-bottom box-shadow">
+            <div class="d-flex justify-content-between w-100">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Tienda">
+                    <img src="~/images/logo.png" alt="Logo home" width="100">
+                </a>
+                @if (User.IsInRole("usuario"))
+                {
+                    <div class="mt-2">
+                        <a class="nav-link" asp-controller="Direccion" asp-action="GestionarDirecciones">Gestionar Direcciones</a>
+                    </div>
+                }
+                <div id="search-items" class="mt-3">
+                    @if (!urlActual.Contains("Identity"))
+                    {
+                        <form class="d-flex" style="border-radius: 6px; overflow: hidden;" method="get" asp-action="BuscarProductos" asp-controller="Producto" asp-route-filter="1" onsubmit="return validarBusqueda()">
+                            @await Component.InvokeAsync("BarraDeBusqueda")
+                        </form>
+                    }
+                </div>
+                <div class="d-flex mt-3">
+                    @if (User.IsInRole("usuario"))
+                    {
+                        @await Component.InvokeAsync("TotalCarrito")
+                    }
+
+                    <!-- Login / cuenta -->
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+
+            <!-- Barra de búsqueda para dispositivos móviles -->
+            <div class="d-block d-md-none mt-2 w-100">
+                @if (!urlActual.Contains("Identity"))
+                {
+                    <form class="d-flex" style="border: 1px solid #53565e; border-radius: 6px; overflow: hidden;" method="get" asp-action="BuscarProductos" asp-controller="Producto" asp-route-filter="1" onsubmit="return validarBusqueda()">
+                        @await Component.InvokeAsync("BarraDeBusqueda")
+                    </form>
+                }
+            </div>
+        </nav>
+    </header>
+	<div id="main-container" class="container-fluid mx-0 px-0">
 		<main role="main" class="">
 			@RenderBody()
 		</main>
