@@ -3,11 +3,13 @@ using TBD.Data;
 using TBD.Models;
 using TBD.Models.ViewModels;
 using TBD.Models.ModelRequest;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "admin")]
     public class ProductoApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

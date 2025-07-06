@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "usuario")]
     public class DireccionApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

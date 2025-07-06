@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TBD.Data;
 using TBD.Models;
@@ -14,7 +15,7 @@ namespace TBD.Controllers
         _context = context;
         }
 
-
+        [Authorize(Roles = "admin")]
         [Route("/GestionarProveedores")]
         public ActionResult GestionarProveedores() 
         {

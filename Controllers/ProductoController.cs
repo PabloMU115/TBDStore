@@ -5,6 +5,7 @@ using TBD.Data;
 using TBD.Models;
 using TBD.Models.ViewModels;
 using TBD.Models.ModelRequest;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TBD.Controllers
 {
@@ -244,6 +245,7 @@ namespace TBD.Controllers
             return View(modelo);
         }
 
+        [Authorize(Roles = "admin")]
         [Route("/GestionarProductos")]
         public ActionResult GestionarProductos()
         {

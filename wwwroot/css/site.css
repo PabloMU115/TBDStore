@@ -1,3 +1,7 @@
+/*
+    This is hell :)
+*/
+
 html {
     font-size: 12px;
     position: relative;
@@ -242,6 +246,23 @@ a {
 }
 
 @media (max-width: 991.98px) {
+    #main-container {
+        margin-top: 10px;
+    }
+
+    .opciones-direccion {
+        font-size: 12px !important;
+    }
+
+    .direccion-div {
+        height: auto !important;
+        width: 90vw;
+    }
+
+    #search-items {
+        display: show;
+    }
+
     .custom-product-layout > .col-lg-8 { /* Imagen + datos */
         order: 1;
     }
@@ -869,12 +890,85 @@ a {
     background-color: dodgerblue !important;
 }
 
+.direccion-div {
+    display: flex;
+    flex-direction: column; 
+    border: 1px solid;
+    border-radius: 6px;
+    height: 50vh;
+    width: 30vw;
+}
+
+.opciones-direccion {
+     text-decoration: none;
+     color: cornflowerblue;
+}
+
+.direccion-actions {
+    margin-top: auto; 
+}
+
+.direccion-div-plus {
+    border: 2px dashed;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.contenedor-direcciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas de igual tamaño */
+    gap: 15px; /* Espacio entre las celdas */
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.btn-plus-direccion {
+    height: 50px;
+    width: 50px;
+    border: 0px;
+    color: lightgreen;
+    font-size: 40px;
+    background-color: transparent;
+    transition: color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-plus-direccion:hover {
+    transform: scale(1.20);
+    color: lawngreen;
+}
+
+#direccion-esPrincipal {
+    height: 20px;
+}
+
+.opciones-direccion {
+    cursor: pointer;
+}
+
 
 /* En pantallas pequeñas (ej: móviles): activar scroll horizontal */
 @media (max-width: 768px) {
     html {
         font-size: 12px;
     }
+
+    .direccion-div {
+        width: 90vw;
+    }
+
+    .direccion-div-plus {
+        height: 15vh;
+        width: 90vw;
+    }
+
+    .contenedor-direcciones {
+        grid-template-columns: repeat(1, 1fr); /* 3 columnas de igual tamaño */
+    }
+
 
     #main-container {
     margin-top: 50px;

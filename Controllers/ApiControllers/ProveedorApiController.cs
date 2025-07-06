@@ -5,11 +5,13 @@ using TBD.Models;
 using TBD.Models.ViewModels;
 using TBD.Models.ModelRequest;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "admin")]
     public class ProveedorApiController : ControllerBase
     {
         ApplicationDbContext _context;

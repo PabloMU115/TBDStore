@@ -1,4 +1,5 @@
 ﻿using System.Drawing.Printing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -205,6 +206,7 @@ namespace TBD.Controllers
             return Json(new { data = categorias });
         }
 
+        [Authorize(Roles = "admin")]
         [Route("/GestionarCategorias")]
         public ActionResult GestionarCategorias()
         {

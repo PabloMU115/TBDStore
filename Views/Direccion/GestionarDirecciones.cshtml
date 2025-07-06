@@ -1,23 +1,59 @@
 ﻿@model List<Direccion>
 @{
 }
-<div style="width: 100%; border: 1px solid black;">
-	<div>
-
+<div class="contenedor-direcciones">
+	<div class="direccion-div-plus">
+		<h3>Agregar dirección nueva</h3>
+		<button class="btn-plus-direccion"><i class="fa-solid fa-square-plus"></i></button>
 	</div>
-@if(Model.Count() > 0)
-{
+	@if (Model.Count() > 0)
+	{
 		@foreach (var p in Model)
 		{
-			<div>
-				<div>
-					<h2>@p.NombreUsuario</h2>
+			<div class="direccion-div" id="@p.IdDireccion">
+				@if (p.esDeterminada == 1)
+				{
+					<div id="direccion-esPrincipal" class="border-bottom w-100 text-center">
+						<h5>Dirección principal de envío</h5>
+					</div>
+				}
+				else
+				{
+					<div id="direccion-esPrincipal" class="border-bottom w-100 text-center">
+
+					</div>
+				}
+				<h5 style="margin-left: 3px; font-weight: bold;">@p.NombreUsuario</h5>
+				<h5 style="margin-left: 3px; ">@p.CedulaUsuario</h5>
+				<h5 style="margin-left: 3px; ">@p.NumeroUsuario</h5>
+				<h5 style="margin-left: 3px; ">@p.provincia</h5>
+				<h5 style="margin-left: 3px; ">@p.canton</h5>
+				<h5 style="margin-left: 3px; overflow-x: clip; text-overflow: ellipsis;">@p.DetallesDireccion</h5>
+				<div style="margin-left: 3px; margin-right: 0px;" class="direccion-actions">
+					@if (p.esDeterminada == 1)
+					{
+						<h5>
+							<a class="opciones-direccion">Editar</a> |
+							<a class="opciones-direccion">Eliminar</a> |
+							<a class="opciones-direccion">Definir como principal</a>
+						</h5>
+					}
+					else
+					{
+						<h5>
+							<a class="opciones-direccion">Editar</a> |
+							<a class="opciones-direccion">Eliminar</a>
+						</h5>
+					}
 				</div>
 			</div>
 		}
-}
-else
-{
-	<h3>No posee direcciones</h3>
-}
-	</div>
+
+	}
+	else
+	{
+		<div class="direccion-div" id="empty">
+			<h3>No posee direcciones</h3>
+		</div>
+	}
+</div>

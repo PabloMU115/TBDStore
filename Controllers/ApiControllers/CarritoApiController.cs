@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TBD.Data;
@@ -10,6 +11,7 @@ namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    //[Authorize(Roles = "usuario")]
     public class CarritoApiController : ControllerBase
     {
         ApplicationDbContext _context;
@@ -43,7 +45,7 @@ namespace TBD.Controllers.ApiControllers
             {
                 Cantidad = c.Cantidad,
                 IdProducto = c.IdProducto,
-                IdUsuario = c.IdUsuario
+                IdUsuario = _userManager.GetUserId(User)
             };
 
             await _context.Carrito.AddAsync(carrito);

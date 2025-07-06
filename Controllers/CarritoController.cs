@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TBD.Data;
 using TBD.Models;
@@ -17,6 +18,7 @@ namespace TBD.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "usuario")]
         [Route("/cart")]
         public ActionResult Index()
         {
