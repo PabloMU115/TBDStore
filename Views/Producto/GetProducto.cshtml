@@ -8,13 +8,13 @@
 		<h4 class="mb-0">Inicio</h4>
 	</a>
 	<a class="text-decoration-none categoria-link"
-	   asp-controller="Categoria"
-	   asp-action="Index"
-	   asp-route-id="@Model.IdCategoria"
-	   asp-route-nombre="@Model.Nombre"
-	   asp-route-filter="1"
-	   asp-route-pageNumber="1"
-	   asp-route-showAll="@false">
+	asp-controller="Categoria"
+	asp-action="Index"
+	asp-route-id="@Model.IdCategoria"
+	asp-route-nombre="@Model.Nombre"
+	asp-route-filter="1"
+	asp-route-pageNumber="1"
+	asp-route-showAll="@false">
 		<h4 class="mb-0">/@Model.Categoria</h4>
 	</a>
 	<h4 class="mb-0">/@Model.Nombre</h4>
@@ -27,24 +27,24 @@
 </div>
 
 <div class="getProducto row g-4 p-4 mx-0 custom-product-layout mt-2"
-	 style="">
+style="">
 	<!-- Columna izquierda: Imagen + Datos -->
 	<div class="col-lg-8 d-flex flex-column flex-md-row gap-4">
 
 		<!-- Imagen -->
 		<div id="getImagenProducto" class="col-md-5 d-flex justify-content-center align-items-center mb-0">
 			<img src="@Model.Imagen" class="h-100"
-				 style="min-height: 300px !important; min-width: 300px !important; max-height: 300px !important; max-width: 300px !important; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"
-				 alt="Imagen de @Model.Nombre" />
+			style="min-height: 300px !important; min-width: 300px !important; max-height: 300px !important; max-width: 300px !important; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"
+			alt="Imagen de @Model.Nombre" />
 		</div>
 
 
 		<!-- Datos principales -->
 		<div class="col-md-7 d-flex flex-column justify-content-start">
 			<h2 class="mb-2">@Model.Nombre</h2>
-			<div class="fs-4 fw-bold mb-2">Marca: @Model.Proveedor</div>
 			<div class="col-12" style="overflow-wrap: break-word;">
 				<h2>Información:</h2>
+				<div class="fs-4 fw-bold mb-2">Marca: @Model.Proveedor</div>
 				<h4>@Model.Descripcion</h4>
 			</div>
 		</div>
@@ -57,23 +57,35 @@
 
 			<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
 
-			<label for="cantidad-input" id="cantidad-label" class="cantidad-label">
-				Seleccione la cantidad que desea ordenar:
-			</label>
+			@if (Model.Stock > 0)
+			{
+				<label for="cantidad-input" id="cantidad-label" class="cantidad-label">
+					Seleccione la cantidad que desea ordenar:
+				</label>
 
-			<div id="cantidad-control" class="cantidad-control">
-				<button id="btn-minus" onclick="minus()">-</button>
-				<input type="number" id="cantidad-input" name="cantidad" min="1" max="@Model.Stock" value="1" oninput="check()"/>
-				<button id="btn-plus" onclick="plus()">+</button>
-			</div>
+				<div id="cantidad-control" class="cantidad-control">
+					<button id="btn-minus" onclick="minus()">-</button>
+					<input type="number" id="cantidad-input" name="cantidad" min="1" max="@Model.Stock" value="1" oninput="check()" />
+					<button id="btn-plus" onclick="plus()">+</button>
+				</div>
+				<div id="stock" class="stock">Cantidad disponible: @Model.Stock</div>
+				<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
 
-			<div id="stock" class="stock">Cantidad disponible: @Model.Stock</div>
-
-			<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
-
-			<button id="btn-comprar" class="btn-comprar" onclick="añadirAlCarrito('@Model.Id')">
-				<i class="fa-solid fa-cart-shopping"></i> Añadir al carrito
-			</button>
+				<button id="btn-comprar" class="btn-comprar" onclick="añadirAlCarrito('@Model.Id')">
+					<i class="fa-solid fa-cart-shopping"></i> Añadir al carrito
+				</button>
+			}
+			else
+			{
+				<div id="stock" class="stock" style="color: red">
+					<h5>
+						Este producto se encuentra agotado.
+					</h5>
+					<h5 style="color: white">
+						Estamos trabajando para reabastecer las existencias....
+					</h5>
+				</div>
+			}
 		</div>
 	</div>
 </div>

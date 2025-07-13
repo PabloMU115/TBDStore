@@ -84,13 +84,13 @@
 						<div class="row mb-3">
 							<div class="col-md-6">
 								<label for="input-precio" class="form-label">Precio</label>
-								<input type="number" step="0.01" class="form-control" id="input-precio-producto-crear" name="Precio" value="0" oninput="actualizarPrecio()">
+								<input type="number" step="0.01" class="form-control" id="input-precio-producto-crear" name="Precio" value="0" min="0" oninput="actualizarPrecio()">
 								<span id="error-precio-producto" class="error-text"></span>
 							</div>
 							
 							<div class="col-md-6">
 								<label for="input-stock" class="form-label">Stock Disponible</label>
-								<input type="number" class="form-control" id="input-stock-producto-crear" name="StockDisponible" value="0" oninput="actualizarStock()">
+								<input type="number" class="form-control" id="input-stock-producto-crear" name="StockDisponible" value="0" min="0" oninput="actualizarStock()">
 								<span id="error-stock-producto" class="error-text"></span>
 							</div>
 						</div>

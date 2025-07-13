@@ -12,7 +12,7 @@ using TBD.Data;
 namespace TBD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250603235636_First")]
+    [Migration("20250713100049_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -164,12 +164,12 @@ namespace TBD.Migrations
             modelBuilder.Entity("TBD.Models.Carrito", b =>
                 {
                     b.Property<string>("IdUsuario")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("IdProducto")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
@@ -201,6 +201,11 @@ namespace TBD.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("varchar(36)");
 
+                    b.Property<string>("Canton")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("CedulaUsuario")
                         .IsRequired()
                         .HasMaxLength(11)
@@ -208,13 +213,13 @@ namespace TBD.Migrations
 
                     b.Property<string>("DetallesDireccion")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
+                        .HasMaxLength(350)
+                        .HasColumnType("varchar(350)");
 
                     b.Property<string>("IdUsuario")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("NombreUsuario")
                         .IsRequired()
@@ -225,6 +230,14 @@ namespace TBD.Migrations
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)");
+
+                    b.Property<string>("Provincia")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("esDeterminada")
+                        .HasColumnType("int");
 
                     b.HasKey("IdDireccion");
 
@@ -262,7 +275,7 @@ namespace TBD.Migrations
                         .HasColumnType("varchar(45)");
 
                     b.Property<decimal>("Precio")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockDisponible")
                         .HasColumnType("int");
@@ -391,12 +404,12 @@ namespace TBD.Migrations
             modelBuilder.Entity("TBD.Models.WishList", b =>
                 {
                     b.Property<string>("IdUsuario")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("IdProducto")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("IdUsuario", "IdProducto");
 

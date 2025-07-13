@@ -111,11 +111,11 @@ function minus(id, nombre, categoria) {
 		document.getElementById("btn-minus-" + id).innerHTML = "<i class='fa-solid fa-trash-can'></i>";
 	}
 	if (parseInt(input.value) === 0) {
-		eliminar(id, nombre, categoria);
+		eliminarDelCarrito(id, nombre, categoria);
 	}
 }
 
-function eliminar(id, nombre, categoria) {
+function eliminarDelCarrito(id, nombre, categoria) {
 	var carrito = document.getElementById("cant");
 	var div = document.getElementById("item-" + id);
 	const spinner = document.getElementById('spinner-eliminar-' + id);
@@ -160,5 +160,37 @@ function eliminar(id, nombre, categoria) {
 		})
 		.catch(error => {
 			console.error("Error al hacer PUT:", error);
+		});
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+	consultarDireccionDeterminada();
+});
+
+function consultarDireccionDeterminada() {
+	fetch("/api/direccionapi/determinada", {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		}
+	})
+		.then(response => response.json())
+		.then(data => {
+			if (data.result) {
+				datos = data.direccion;
+				document.getElementById("div-direcciones-carrito-none").style.display = "none";
+				document.getElementById("nombre").innerText = datos.nombreUsuario;
+				document.getElementById("cedula").innerText = datos.cedulaUsuario;
+				document.getElementById("numero").innerText = datos.numeroUsuario;
+				document.getElementById("provincia").innerText = datos.provincia;
+				document.getElementById("canton").innerText = datos.canton;
+				document.getElementById("detalles").innerText = datos.detallesDireccion;
+			}
+			else {
+				document.getElementById("div-direcciones-carrito").style.display = "none";
+			}
+		})
+		.catch(error => {
+			console.error("Error al hacer GET:", error);
 		});
 }

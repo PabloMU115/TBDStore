@@ -23,15 +23,15 @@ namespace TBD.Models
         public string NumeroUsuario { get; set; }
 
         [StringLength(100)]
-        public string provincia { get; set; }
+        public string Provincia { get; set; }
 
         [StringLength(100)]
-        public string canton { get; set; }
+        public string Canton { get; set; }
 
         public int esDeterminada { get; set; } = 0;
 
         [Required]
-        [StringLength(300)]
+        [StringLength(350)]
         public string DetallesDireccion { get; set; }
 
         // Clave foránea a Usuario

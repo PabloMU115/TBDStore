@@ -1,10 +1,17 @@
-﻿@model List<Direccion>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<Usuario> UserManager
+@model List<Direccion>
 @{
+	var usuarioActual = await UserManager.GetUserAsync(User);
+	var telefono = await UserManager.GetPhoneNumberAsync(usuarioActual);
+	var nombre = usuarioActual.NombreCompleto;
 }
 <div class="contenedor-direcciones">
-	<div class="direccion-div-plus">
+	<div class="direccion-div-plus" onclick="openCrear()">
 		<h3>Agregar dirección nueva</h3>
-		<button class="btn-plus-direccion"><i class="fa-solid fa-square-plus"></i></button>
+		<button type="button" class="btn-plus-direccion" onclick="openCrear()">
+			<i class="fa-solid fa-square-plus"></i>
+		</button>
 	</div>
 	@if (Model.Count() > 0)
 	{
@@ -26,23 +33,32 @@
 				<h5 style="margin-left: 3px; font-weight: bold;">@p.NombreUsuario</h5>
 				<h5 style="margin-left: 3px; ">@p.CedulaUsuario</h5>
 				<h5 style="margin-left: 3px; ">@p.NumeroUsuario</h5>
-				<h5 style="margin-left: 3px; ">@p.provincia</h5>
-				<h5 style="margin-left: 3px; ">@p.canton</h5>
-				<h5 style="margin-left: 3px; overflow-x: clip; text-overflow: ellipsis;">@p.DetallesDireccion</h5>
+				<h5 style="margin-left: 3px; ">@p.Provincia</h5>
+				<h5 style="margin-left: 3px; ">@p.Canton</h5>
+				<div style="
+				  display: -webkit-box;
+				  -webkit-line-clamp: 2;
+				  -webkit-box-orient: vertical;
+				  overflow: hidden;
+				  font-size: 15px;
+				  margin-left: 3px;
+						">
+					@p.DetallesDireccion
+				</div>
 				<div style="margin-left: 3px; margin-right: 0px;" class="direccion-actions">
-					@if (p.esDeterminada == 1)
+					@if (p.esDeterminada != 1)
 					{
 						<h5>
-							<a class="opciones-direccion">Editar</a> |
-							<a class="opciones-direccion">Eliminar</a> |
-							<a class="opciones-direccion">Definir como principal</a>
+							<a onclick="openEditar('@p.IdDireccion')" class="opciones-direccion">Editar</a> |
+							<a onclick="eliminar('@p.IdDireccion')" class="opciones-direccion">Eliminar</a> |
+							<a onclick="seleccionarDeterminada('@p.IdDireccion')" class="opciones-direccion">Definir como principal</a>
 						</h5>
 					}
 					else
 					{
 						<h5>
-							<a class="opciones-direccion">Editar</a> |
-							<a class="opciones-direccion">Eliminar</a>
+							<a onclick="openEditar('@p.IdDireccion')" class="opciones-direccion">Editar</a> |
+							<a onclick="eliminar('@p.IdDireccion')" class="opciones-direccion">Eliminar</a>
 						</h5>
 					}
 				</div>
@@ -52,8 +68,102 @@
 	}
 	else
 	{
-		<div class="direccion-div" id="empty">
+		<div class="direccion-div text-center" id="empty">
 			<h3>No posee direcciones</h3>
 		</div>
 	}
 </div>
+
+<!-- Modal crear -->
+<div class="modal fade" id="ModalCrear" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalCrearLabel" aria-hidden="true" style="background-color: transparent !important; backdrop-filter: blur(10px);">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalCrearLabel">Agregar dirección nueva</h5>
+				<button type="button" class="btn-close" onclick="cerrarCrear()" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container" id="formulario-container">
+					<div id="formulario-direccion">
+						<!-- Fila 1: Nombre -->
+						<div class="">
+							<div class="">
+								<label for="input-nombre-direccion" class="form-label">Nombre</label>
+								<input type="text" class="form-control" id="input-nombre-direccion" maxlength="45" name="Nombre" oninput="actualizarContadorNombre(this)" value="@nombre">
+								<p class="" id="contador_Nombre" style="margin-bottom: 5px !important;">0/45 caracteres</p>
+								<span id="error-nombre" class="error-text"></span>
+							</div>
+						</div>
+
+						<!-- Fila 2: Numero y Cedula -->
+						<div class="row mb-3">
+							<div class="col-md-6">
+								<label for="input-cedula-direccion" class="form-label">Cédula</label>
+								<input type="text" class="form-control" id="input-cedula-direccion" name="Cedula" placeholder="0-0000-0000" oninput="actualizarCampoCedula()" onblur="formatear()" onfocus="formatearGuiones()">
+								<span id="error-cedula" class="error-text"></span>
+							</div>
+							
+							<div class="col-md-6">
+								<label for="input-celular-direccion" class="form-label">Número celular</label>
+								<input type="text" class="form-control" id="input-celular-direccion" name="Celular" oninput="actualizarCampoCelular()" value="@telefono">
+								<span id="error-celular" class="error-text"></span>
+							</div>
+						</div>
+
+						<!-- Fila 3: Provincia y Canton -->
+						<div class="row mb-3">
+							<div class="col-md-6">
+								<label for="input-provincia" class="form-label">Provincia</label>
+								<select id="input-provincia" name="idProvincia" class="form-select" style="margin-bottom: 0px !important;" oninput="actualizarCantones()">
+									<option selected hidden disabled value="-">Seleccione su provincia</option>
+									<option value="san jose">San José</option>
+									<option value="alajuela">Alajuela</option>
+									<option value="cartago">Cartago</option>
+									<option value="heredia">Heredia</option>
+									<option value="limon">Limón</option>
+									<option value="puntarenas">Puntarenas</option>
+									<option value="guanacaste">Guanacaste</option>
+								</select>
+								<span id="error-provincia" class="error-text" style="margin-bottom: 0px !important;"></span>
+							</div>
+							<div class="col-md-6">
+								<label for="input-canton" class="form-label">Cantón</label>
+								<select id="input-canton" name="idCanton" class="form-select" oninput="errorCantones()">
+									<option selected hidden disabled value="-">Seleccione su cantón</option>
+									
+								</select>
+								<span id="error-canton" class="error-text"></span>
+							</div>
+						</div>
+
+						<!-- Fila 5: Detalles -->
+						<div class="row mb-2">
+							<div class="col-md-12">
+								<label for="input-descripcion-direccion" class="form-label">Detalles de envío</label>
+								<textarea class="form-control" id="input-descripcion-direccion" 
+								name="Descripcion" 
+								rows="5" 
+								maxlength="300" 
+								oninput="actualizarContadorDesc(this)"
+								style="resize: none;"></textarea>
+								<p class="ms-lg-2 mt-1" id="contador_descripcion" style="margin-bottom: 5px !important;">0/350 caracteres</p>
+							</div>
+						</div>
+
+						<!-- Fila 6: Botón -->
+						<div class="row" style="margin-bottom: 70px !important;">
+							<div class="col text-center">
+								<!-- Botón de Guardar -->
+								<button class="btn-direccion btn btn-success" id="btn-guardar" onclick="crearDireccion()">Guardar Dirección</button>
+
+								<!-- Botón de Editar -->
+								<button class="btn-direccion btn btn-success" id="btn-editar" onclick="editar()">Editar Dirección</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="~/js/GestionarDireccionesScript.js"></script>

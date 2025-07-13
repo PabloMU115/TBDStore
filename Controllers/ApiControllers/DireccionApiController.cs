@@ -28,29 +28,56 @@ namespace TBD.Controllers.ApiControllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ConsultarDireccion(string id)
         {
-            var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.IdDireccion == id);
+            var idUsuario = _userManager.GetUserId(User);
+            var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.IdDireccion == id && p.IdUsuario == idUsuario);
 
             if (direccion == null)
             {
                 return NotFound(new { result = false });
-            } 
+            }
+
+            return Ok(new { result = true, direccion });
+        }
+
+        [HttpGet("determinada")]
+        public async Task<IActionResult> ConsultarDeterminada()
+        {
+            var idUsuario = _userManager.GetUserId(User);
+            var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.esDeterminada == 1 && p.IdUsuario == idUsuario);
+
+            if (direccion == null)
+            {
+                return NotFound(new { result = false });
+            }
 
             return Ok(new { result = true, direccion });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CrearDireccion([FromBody] DireccionCreate d) 
+        public async Task<IActionResult> CrearDireccion([FromBody] DireccionCreate d)
         {
             var idUsuario = _userManager.GetUserId(User);
-            var direccion = new Direccion 
+            
+            if (idUsuario == null)
             {
-                IdDireccion = Guid.NewGuid()+"",
+                return NotFound(new { result = false });
+            }
+
+            var direccion = new Direccion
+            {
+                IdDireccion = Guid.NewGuid() + "",
                 NombreUsuario = d.nombre,
                 CedulaUsuario = d.cedula,
                 NumeroUsuario = d.numero,
+                Provincia = d.Provincia,
+                Canton = d.Canton,
                 DetallesDireccion = d.detalles,
                 IdUsuario = idUsuario
             };
+            if (_context.Direcciones.Count() == 0)
+            {
+                direccion.esDeterminada = 1;
+            }
 
             await _context.Direcciones.AddAsync(direccion);
             await _context.SaveChangesAsync();
@@ -59,28 +86,53 @@ namespace TBD.Controllers.ApiControllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> ModificarDireccion(string id, [FromBody] DireccionUpdate d) 
+        public async Task<IActionResult> ModificarDireccion(string id, [FromBody] DireccionUpdate d)
         {
             var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.IdDireccion == id);
 
-            if (direccion == null) 
+            if (direccion == null)
             {
                 return NotFound(new { result = false });
             }
 
             direccion.NombreUsuario = d.nombre;
-            direccion.CedulaUsuario= d.cedula;
-            direccion.NumeroUsuario= d.numero;
-            direccion.DetallesDireccion= d.detalles;
+            direccion.CedulaUsuario = d.cedula;
+            direccion.NumeroUsuario = d.numero;
+            direccion.DetallesDireccion = d.detalles;
+            direccion.Canton = d.canton;
+            direccion.Provincia = d.provincia;
 
             _context.Direcciones.Update(direccion);
             await _context.SaveChangesAsync();
 
-            return Ok(new { result = true});
+            return Ok(new { result = true });
+        }
+
+        [HttpPut("{id}/1")]
+        public async Task<IActionResult> CambiarDeterminada(string id)
+        {
+            var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.IdDireccion == id);
+            var direccionVieja = await _context.Direcciones.FirstOrDefaultAsync(p => p.esDeterminada == 1);
+            if (direccion == null)
+            {
+                return NotFound(new { result = false });
+            }
+
+            direccion.esDeterminada = 1;
+
+            _context.Direcciones.Update(direccion);
+            if (direccionVieja != null)
+            {
+                direccionVieja.esDeterminada = 0;
+                _context.Direcciones.Update(direccionVieja);
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(new { result = true });
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarDireccion(String id) 
+        public async Task<IActionResult> EliminarDireccion(String id)
         {
             var direccion = await _context.Direcciones.FirstOrDefaultAsync(p => p.IdDireccion == id);
 

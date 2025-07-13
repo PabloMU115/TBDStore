@@ -22,6 +22,12 @@ namespace TBD.Data
             modelBuilder.Entity<Carrito>()
                 .HasKey(c => new { c.IdUsuario, c.IdProducto });
 
+            modelBuilder.Entity<Carrito>()
+                .HasOne(c => c.Usuario)
+                .WithMany(u => u.Carrito)
+                .HasForeignKey(c => c.IdUsuario)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Producto>()
                 .Property(p => p.Precio)
                 .HasColumnType("decimal(18,2)");

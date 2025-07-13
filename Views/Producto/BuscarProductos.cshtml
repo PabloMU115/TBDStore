@@ -10,7 +10,12 @@
 		<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
 			<h4 class="mb-0">Inicio</h4>
 		</a>
-		<h4 class="mb-0">/Todas las categorias /Resultados "@Model.Busqueda"</h4>
+		<h4 class="mb-0">
+			/<a asp-controller="Home"
+				asp-action="Tienda"
+				style="text-decoration: none; font-size: 20px !important;"> Todas las categorias
+			</a> / Resultados "@Model.Busqueda"
+		</h4>
 	</div>
 }
 else

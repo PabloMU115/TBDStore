@@ -255,9 +255,14 @@ namespace TBD.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NumeroUsuario = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DetallesDireccion = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                    Provincia = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdUsuario = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    Canton = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    esDeterminada = table.Column<int>(type: "int", nullable: false),
+                    DetallesDireccion = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IdUsuario = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -280,7 +285,7 @@ namespace TBD.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NombreProducto = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Precio = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    Precio = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Descripcion = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StockDisponible = table.Column<int>(type: "int", nullable: false),
@@ -313,9 +318,9 @@ namespace TBD.Migrations
                 name: "Carrito",
                 columns: table => new
                 {
-                    IdUsuario = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    IdUsuario = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdProducto = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    IdProducto = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Cantidad = table.Column<int>(type: "int", nullable: false)
                 },
@@ -341,9 +346,9 @@ namespace TBD.Migrations
                 name: "ListaDeseos",
                 columns: table => new
                 {
-                    IdUsuario = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    IdUsuario = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    IdProducto = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    IdProducto = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>

@@ -21,8 +21,8 @@ namespace TBD.Models.ViewModels
         {
             var idUsuario = _userManager.GetUserId(User as ClaimsPrincipal);
             var items = (from c in _context.Carrito
-                         where c.IdUsuario.Equals(idUsuario)
                          join p in _context.Productos on c.IdProducto equals p.IdProducto
+                         where p.StockDisponible > 0 && c.IdUsuario.Equals(idUsuario)
                          select c).ToList();
             var total = 0;
             foreach (var c in items) {

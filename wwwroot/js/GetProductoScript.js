@@ -14,16 +14,16 @@ function añadirAlCarrito(id) {
 	const cantidad = document.getElementById("cantidad-input").value;
 	buscar(id).then(resultado => {
 		if (!resultado) {
-			crear(id, cantidad);
+			insertarAlCarrito(id, cantidad);
 		}
 		else {
-			editar(id, cantidad);
+			editarCarrito(id, cantidad);
 		}
 
 	});
 }
 
-function crear(id, cantidad) {
+function insertarAlCarrito(id, cantidad) {
 	var carrito = document.getElementById("cant");
 	fetch("/api/carritoapi/", {
 		method: "POST",
@@ -47,7 +47,7 @@ function crear(id, cantidad) {
 		});
 }
 
-function editar(id, cantidad) {
+function editarCarrito(id, cantidad) {
 	var carrito = document.getElementById("cant");
 	fetch("/api/carritoapi/" + id, {
 		method: "PUT",

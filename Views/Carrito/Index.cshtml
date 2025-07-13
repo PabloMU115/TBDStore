@@ -21,6 +21,31 @@
 					<h3>Subtotal (0 items) = ₡</h3>
 					<h3 id="precioSubtotal">0</h3>
 				</div>
+				<div id="div-direcciones-carrito" style="border: 1px solid white; border-radius: 12px; width: 70%;">
+					<div id="direccion-esPrincipal" class="border-bottom w-100 text-center">
+						<h5>Enviando a la dirección:</h5>
+					</div>
+					<h5 id="nombre" style="margin-left: 3px; font-weight: bold;"></h5>
+					<h5 id="cedula" style="margin-left: 3px; "></h5>
+					<h5 id="numero" style="margin-left: 3px; "></h5>
+					<h5 id="provincia" style="margin-left: 3px; "></h5>
+					<h5 id="canton" style="margin-left: 3px; "></h5>
+					<div style="
+					  display: -webkit-box;
+					  -webkit-line-clamp: 2;
+					  -webkit-box-orient: vertical;
+					  overflow: hidden;
+					  font-size: 15px;
+					  margin-left: 3px;
+								">
+						<h5 id="detalles" style="font-size: 15px;"></h5>
+					</div>
+				</div>
+				<div id="div-direcciones-carrito-none" style="border: 1px solid white; border-radius: 12px; width: 70%;">
+					<div id="direccion-esPrincipal" class="w-100 text-center">
+						<h5>No posee dirección principal.</h5>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -33,54 +58,106 @@ else
 			<div class="carrito-label"><h3 id="carrito-label">Carrito:</h3></div>
 			@foreach (var c in Model)
 			{
-				cantidad += c.CantidadProducto;
-				total += c.PrecioProducto * c.CantidadProducto;
-				<div id="item-@c.IdProducto" class="carrito-item" style="padding-bottom: 10px !important;">
-					<div class="carrito-img-container">
-						<img src="@c.ImagenProducto" class="carrito-img" alt="Imagen de @c.NombreProducto" />
-					</div>
-
-					<div class="carrito-info">
-						<div>
-							<a class="nombre" id="@c.NombreProducto"
-							asp-controller="Producto"
-							asp-action="GetProducto"
-							asp-route-id="@c.IdProducto"
-							asp-route-nombre="@c.NombreProducto"
-							asp-route-idCategoria="@c.IdCategoria">@c.NombreProducto</a>
-							<div class="d-flex gap-1">
-								<h5>Stock:</h5>
-								<h5>@c.StockProducto</h5>
-							</div>
-							<h5 id="unitario_@c.IdProducto">Precio unitario: ₡@c.PrecioProducto</h5>
-							<h5 id="total_@c.IdProducto">Precio Total: ₡@(c.PrecioProducto * c.CantidadProducto)</h5>
+				if (c.StockProducto > 0)
+				{
+					cantidad += c.CantidadProducto;
+					total += c.PrecioProducto * c.CantidadProducto;
+					<div id="item-@c.IdProducto" class="carrito-item" style="padding-bottom: 10px !important;">
+						<div class="carrito-img-container">
+							<img src="@c.ImagenProducto" class="carrito-img" alt="Imagen de @c.NombreProducto" />
 						</div>
 
-						<div class="cantidad-control-wrapper">
-							<div id="cantidad-control" class="cantidad-control">
-								@if (c.CantidadProducto > 1)
-								{
-									<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">-</button>
-								}
-								else
-								{
-									<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')"><i class="fa-solid fa-trash-can"></i></button>
-								}
-								<div class="input-wrapper">
-									<input type="number" class="input-sin-botones" id="@c.IdProducto"
-										   name="cantidad" min="0" max="@c.StockProducto" value="@c.CantidadProducto" readonly />
-									<div class="spinner-overlay" id="spinner-@c.IdProducto"></div>
+						<div class="carrito-info">
+							<div>
+								<a class="nombre" id="@c.NombreProducto"
+								asp-controller="Producto"
+								asp-action="GetProducto"
+								asp-route-id="@c.IdProducto"
+								asp-route-nombre="@c.NombreProducto"
+								asp-route-idCategoria="@c.IdCategoria">@c.NombreProducto</a>
+								<div class="d-flex gap-1">
+									<h5>Stock:</h5>
+									<h5>@c.StockProducto</h5>
 								</div>
-								<button id="btn-plus-@c.IdProducto" class="btn-plus" onclick="plus('@c.IdProducto')">+</button>
+								<h5 id="unitario_@c.IdProducto">Precio unitario: ₡@c.PrecioProducto</h5>
+								<h5 id="total_@c.IdProducto">Precio Total: ₡@(c.PrecioProducto * c.CantidadProducto)</h5>
+							</div>
+
+							<div class="cantidad-control-wrapper">
+								<div id="cantidad-control" class="cantidad-control">
+									@if (c.CantidadProducto > 1)
+									{
+										<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">-</button>
+									}
+									else
+									{
+										<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')"><i class="fa-solid fa-trash-can"></i></button>
+									}
+									<div class="input-wrapper">
+										<input type="number" class="input-sin-botones" id="@c.IdProducto"
+										name="cantidad" min="0" max="@c.StockProducto" value="@c.CantidadProducto" readonly />
+										<div class="spinner-overlay" id="spinner-@c.IdProducto"></div>
+									</div>
+									<button id="btn-plus-@c.IdProducto" class="btn-plus" onclick="plus('@c.IdProducto')">+</button>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<button id="btn-eliminar-@c.IdProducto" class="btn-eliminarItem btn-danger" onclick="eliminar('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">
-						<i class="fa-solid fa-trash-can"></i>
-					</button>
-					<div class="spinner-overlay-eliminar" id="spinner-eliminar-@c.IdProducto"></div>
-				</div>
+						<button id="btn-eliminar-@c.IdProducto" class="btn-eliminarItem btn-danger" onclick="eliminarDelCarrito('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">
+							<i class="fa-solid fa-trash-can"></i>
+						</button>
+						<div class="spinner-overlay-eliminar" id="spinner-eliminar-@c.IdProducto"></div>
+					</div>
+				}
+				else
+				{
+					<div id="item-@c.IdProducto" class="carrito-item" style="padding-bottom: 10px !important;">
+						<div class="carrito-img-container">
+							<img src="@c.ImagenProducto" class="carrito-img" alt="Imagen de @c.NombreProducto" />
+						</div>
+
+						<div class="carrito-info">
+							<div>
+								<a class="nombre" id="@c.NombreProducto"
+								   asp-controller="Producto"
+								   asp-action="GetProducto"
+								   asp-route-id="@c.IdProducto"
+								   asp-route-nombre="@c.NombreProducto"
+								   asp-route-idCategoria="@c.IdCategoria">@c.NombreProducto</a>
+								<div class="d-flex gap-1">
+									<h5 style="color: red;">Este producto se encuentra agotado.</h5>
+									<h5 hidden>Stock: </h5>
+									<h5 hidden>@c.StockProducto</h5>
+								</div>
+								<h5 hidden id="unitario_@c.IdProducto">Precio unitario: ₡@c.PrecioProducto</h5>
+								<h5 hidden id="total_@c.IdProducto">Precio Total: ₡@(c.PrecioProducto * c.CantidadProducto)</h5>
+							</div>
+							<div hidden class="cantidad-control-wrapper">
+								<div id="cantidad-control" class="cantidad-control">
+									@if (c.CantidadProducto > 1)
+									{
+										<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">-</button>
+									}
+									else
+									{
+										<button id="btn-minus-@c.IdProducto" class="btn-minus" onclick="minus('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')"><i class="fa-solid fa-trash-can"></i></button>
+									}
+									<div class="input-wrapper">
+										<input type="number" class="input-sin-botones" id="@c.IdProducto"
+											   name="cantidad" min="0" max="@c.StockProducto" value="@c.CantidadProducto" readonly />
+										<div class="spinner-overlay" id="spinner-@c.IdProducto"></div>
+									</div>
+									<button id="btn-plus-@c.IdProducto" class="btn-plus" onclick="plus('@c.IdProducto')">+</button>
+								</div>
+							</div>
+						</div>
+
+						<button id="btn-eliminar-@c.IdProducto" class="btn-eliminarItem btn-danger" onclick="eliminarDelCarrito('@c.IdProducto', '@c.NombreProducto', '@c.IdCategoria')">
+							<i class="fa-solid fa-trash-can"></i>
+						</button>
+						<div class="spinner-overlay-eliminar" id="spinner-eliminar-@c.IdProducto"></div>
+					</div>
+				}
 			}
 			<div><h3></h3></div>
 		</div>
@@ -94,6 +171,31 @@ else
 					<h3>)= ₡</h3>
 					<h3 id="precioSubtotal">@total</h3>
 				</div>
+				<div id="div-direcciones-carrito" style="border: 1px solid white; border-radius: 12px; width: 70%;">
+					<div id="direccion-esPrincipal" class="border-bottom w-100 text-center">
+						<h5>Enviando a la dirección:</h5>
+					</div>
+					<h5 id="nombre" style="margin-left: 3px; font-weight: bold;"></h5>
+					<h5 id="cedula" style="margin-left: 3px; "></h5>
+					<h5 id="numero" style="margin-left: 3px; "></h5>
+					<h5 id="provincia" style="margin-left: 3px; "></h5>
+					<h5 id="canton" style="margin-left: 3px; "></h5>
+					<div style="
+					  display: -webkit-box;
+					  -webkit-line-clamp: 2;
+					  -webkit-box-orient: vertical;
+					  overflow: hidden;
+					  font-size: 15px;
+					  margin-left: 3px;
+							">
+						<h5 id="detalles" style="font-size: 15px;"></h5>
+					</div>
+				</div>
+				<div id="div-direcciones-carrito-none" style="border: 1px solid white; border-radius: 12px; width: 70%;">
+					<div id="direccion-esPrincipal" class="w-100 text-center">
+						<h5>No posee dirección principal.</h5>
+					</div>
+				</div>
 				<button id="btn-comprar" class="btn-comprar" onclick="">
 					Proceder con la compra
 				</button>
@@ -102,7 +204,7 @@ else
 	</div>
 }
 
-@section scripts {
-	<script src="~/js/CarritoScript.js"></script>
+@section scripts { 
+	<script src="~/js/GestionarCarritosScripts.js"></script>
 }
 

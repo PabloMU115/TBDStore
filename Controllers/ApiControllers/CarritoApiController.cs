@@ -11,7 +11,7 @@ namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    //[Authorize(Roles = "usuario")]
+    [Authorize(Roles = "usuario")]
     public class CarritoApiController : ControllerBase
     {
         ApplicationDbContext _context;

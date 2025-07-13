@@ -6,5 +6,8 @@
         public String numero { set; get; }
         public String cedula { set; get; }
         public String detalles { set; get; }
+        public String canton { set; get; }
+        public String provincia { set; get; }
+        public int esDeterminada { set; get; }
     }
 }

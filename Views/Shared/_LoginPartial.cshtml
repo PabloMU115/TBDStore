@@ -22,8 +22,8 @@
 					<a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Información de la cuenta</a>
 				</li>
 				<li class="nav-item">
-					<form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-						<button type="submit" class="nav-link btn btn-link text-dark w-100">Logout</button>
+					<form class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+						<button type="submit" class="nav-link-button w-100">Logout</button>
 					</form>
 				</li>
 			</ul>

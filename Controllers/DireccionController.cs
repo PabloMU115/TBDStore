@@ -25,7 +25,7 @@ namespace TBD.Controllers
         public async Task<ActionResult> GestionarDirecciones()
         {
             var user = _userManager.GetUserId(User);
-            var direcciones = _context.Direcciones.Where(p => p.IdUsuario == user).ToList();
+            var direcciones = _context.Direcciones.Where(p => p.IdUsuario == user).ToList().OrderByDescending(p => p.esDeterminada).ToList();
             return View(direcciones);
         }
     }

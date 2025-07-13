@@ -8,7 +8,10 @@
 	<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
 		<h4 class="mb-0">Inicio</h4>
 	</a>
-	<a class="text-decoration-none" asp-controller="Categoria" asp-action="ListarCategorias">
+	<a class="text-decoration-none" asp-controller="Categoria"
+	   asp-action="ListarCategorias"
+	   asp-route-pageNumber="1"
+	   asp-route-showAll="@false">
 		<h4 class="mb-0">/Categorias</h4>
 	</a>
 	<h4 class="mb-0">/@Model.Categoria.NombreCategoria</h4>
@@ -55,6 +58,8 @@
 				<a class="boton-volver mt-0" id="div-volver-categorias"
 				   asp-controller="Categoria"
 				   asp-action="ListarCategorias"
+				   asp-route-pageNumber="1"
+				   asp-route-showAll="@false
 				   style="text-decoration: none;">
 					<i class="fa-solid fa-left-long"></i> Todas las categorías
 				</a>
