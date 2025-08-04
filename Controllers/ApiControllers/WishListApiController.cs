@@ -24,11 +24,15 @@ namespace TBD.Controllers.ApiControllers
         [HttpPost]
         public async Task<IActionResult> AddItemDeseo([FromBody] ItemListaDeseoCreate i) 
         {
-            var id = _userManager.GetUserId(User);
+            var idUsuario = _userManager.GetUserId(User);
+            if (idUsuario == null)
+            {
+                return NotFound(new { result = false });
+            }
             var item = new WishList 
             { 
                 IdProducto = i.IdProducto,
-                IdUsuario = i.IdUsuario
+                IdUsuario = idUsuario
             };
             await _context.ListaDeseos.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -39,8 +43,11 @@ namespace TBD.Controllers.ApiControllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItem(string id) 
         {
-            var idUsuario = "4448fa3d-d307-4160-a507-8f8b166857ff";
-            //var idUsuario = _userManager.GetUserId(User);
+            var idUsuario = _userManager.GetUserId(User);
+            if (idUsuario == null)
+            {
+                return NotFound(new { result = false });
+            }
             var item = await _context.ListaDeseos.FirstOrDefaultAsync(
                 p => p.IdProducto.Equals(id) && p.IdUsuario.Equals(idUsuario));
 
@@ -55,8 +62,11 @@ namespace TBD.Controllers.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(string id) 
         {
-            var idUsuario = "4448fa3d-d307-4160-a507-8f8b166857ff";
-            //var idUsuario = _userManager.GetUserId(User);
+            var idUsuario = _userManager.GetUserId(User);
+            if (idUsuario == null)
+            {
+                return NotFound(new { result = false });
+            }
             var i = await _context.ListaDeseos.FirstOrDefaultAsync(p => p.IdProducto.Equals(id) && p.IdUsuario.Equals(idUsuario));
             
             if (i == null)

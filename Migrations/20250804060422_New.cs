@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TBD.Migrations
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class New : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,6 +88,21 @@ namespace TBD.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categorias", x => x.IdCategoria);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ContadorVistas",
+                columns: table => new
+                {
+                    idVista = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    fecha = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    cantidad = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContadorVistas", x => x.idVista);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -278,6 +293,30 @@ namespace TBD.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Ordenes",
+                columns: table => new
+                {
+                    idOrden = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    direccion = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Estado = table.Column<int>(type: "int", nullable: false),
+                    IdUsuario = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ordenes", x => x.idOrden);
+                    table.ForeignKey(
+                        name: "FK_Ordenes_AspNetUsers_IdUsuario",
+                        column: x => x.IdUsuario,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Productos",
                 columns: table => new
                 {
@@ -289,6 +328,7 @@ namespace TBD.Migrations
                     Descripcion = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StockDisponible = table.Column<int>(type: "int", nullable: false),
+                    cantidadVendidos = table.Column<int>(type: "int", nullable: false),
                     ImagenUrl = table.Column<string>(type: "varchar(2083)", maxLength: 2083, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IdProveedor = table.Column<string>(type: "varchar(255)", nullable: false)
@@ -343,6 +383,29 @@ namespace TBD.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "HistorialVentas",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    fechaVenta = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    cantidadVendida = table.Column<int>(type: "int", nullable: false),
+                    IdProducto = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistorialVentas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HistorialVentas_Productos_IdProducto",
+                        column: x => x.IdProducto,
+                        principalTable: "Productos",
+                        principalColumn: "IdProducto",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ListaDeseos",
                 columns: table => new
                 {
@@ -362,6 +425,49 @@ namespace TBD.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ListaDeseos_Productos_IdProducto",
+                        column: x => x.IdProducto,
+                        principalTable: "Productos",
+                        principalColumn: "IdProducto",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Pedidos",
+                columns: table => new
+                {
+                    idPedido = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    paypalID = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    cantidad = table.Column<int>(type: "int", nullable: false),
+                    precioUnitario = table.Column<int>(type: "int", nullable: false),
+                    fechaPedido = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    fechaEnviado = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IdProducto = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IdUsuario = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IdOrden = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pedidos", x => x.idPedido);
+                    table.ForeignKey(
+                        name: "FK_Pedidos_AspNetUsers_IdUsuario",
+                        column: x => x.IdUsuario,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Pedidos_Ordenes_IdOrden",
+                        column: x => x.IdOrden,
+                        principalTable: "Ordenes",
+                        principalColumn: "idOrden",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Pedidos_Productos_IdProducto",
                         column: x => x.IdProducto,
                         principalTable: "Productos",
                         principalColumn: "IdProducto",
@@ -417,9 +523,34 @@ namespace TBD.Migrations
                 column: "IdUsuario");
 
             migrationBuilder.CreateIndex(
+                name: "IX_HistorialVentas_IdProducto",
+                table: "HistorialVentas",
+                column: "IdProducto");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ListaDeseos_IdProducto",
                 table: "ListaDeseos",
                 column: "IdProducto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ordenes_IdUsuario",
+                table: "Ordenes",
+                column: "IdUsuario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pedidos_IdOrden",
+                table: "Pedidos",
+                column: "IdOrden");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pedidos_IdProducto",
+                table: "Pedidos",
+                column: "IdProducto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pedidos_IdUsuario",
+                table: "Pedidos",
+                column: "IdUsuario");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Productos_IdCategoria",
@@ -454,19 +585,31 @@ namespace TBD.Migrations
                 name: "Carrito");
 
             migrationBuilder.DropTable(
+                name: "ContadorVistas");
+
+            migrationBuilder.DropTable(
                 name: "Direcciones");
+
+            migrationBuilder.DropTable(
+                name: "HistorialVentas");
 
             migrationBuilder.DropTable(
                 name: "ListaDeseos");
 
             migrationBuilder.DropTable(
+                name: "Pedidos");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Ordenes");
 
             migrationBuilder.DropTable(
                 name: "Productos");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Categorias");

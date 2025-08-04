@@ -2,9 +2,20 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+let contenidoReserva = {};
+document.addEventListener("DOMContentLoaded", function () {
+	consultarDireccionDeterminada();
+
+	const contenedor = document.getElementById("carrito-items");
+	const hijos = contenedor.querySelectorAll("div.carrito-item");
+
+	hijos.forEach(div => {
+		contenidoReserva[div.id] = div.innerHTML;
+	});
+});
 function plus(id) {
 	var carrito = document.getElementById("cant");
-	var input = document.getElementById(id);
+	var input = document.getElementById("cantidad_"+id);
 	const spinner = document.getElementById('spinner-' + id);
 	var cantidadTotal = document.getElementById("cantidad-items-carrito");
 	var suma = 0;
@@ -37,7 +48,7 @@ function plus(id) {
 					var total = document.getElementById("total_" + id);
 					var subtotal = document.getElementById("precioSubtotal");
 					suma = parseInt(cantidadTotal.innerHTML) + 1;
-					cantidadTotal.innerHTML = suma + " items";
+					cantidadTotal.innerHTML = suma;
 					precio = parseInt(cantidad) * parseFloat(unitario);
 					total.innerHTML = "Precio Total: ₡" + precio;
 					subtotal.innerHTML = parseFloat(subtotal.innerHTML) + parseFloat(unitario);
@@ -45,7 +56,7 @@ function plus(id) {
 					spinner.style.display = 'none';
 					botonMinus.disabled = false;
 					botonPlus.disabled = false;
-				}, 900);
+				}, 500);
 			})
 			.catch(error => {
 				console.error("Error al hacer PUT:", error);
@@ -57,7 +68,7 @@ function plus(id) {
 }
 
 function minus(id, nombre, categoria) {
-	var input = document.getElementById(id);
+	var input = document.getElementById("cantidad_"+id);
 	var carrito = document.getElementById("cant");
 	const spinner = document.getElementById('spinner-' + id);
 	var cantidadTotal = document.getElementById("cantidad-items-carrito");
@@ -92,7 +103,7 @@ function minus(id, nombre, categoria) {
 						var total = document.getElementById("total_" + id);
 						var subtotal = document.getElementById("precioSubtotal");
 						resta = parseInt(cantidadTotal.innerHTML) - 1;
-						cantidadTotal.innerHTML = resta + " items";
+						cantidadTotal.innerHTML = resta;
 						precio = parseInt(cantidad) * parseFloat(unitario);
 						total.innerHTML = "Precio Total: ₡" + precio;
 						subtotal.innerHTML = parseFloat(subtotal.innerHTML) - parseFloat(unitario);
@@ -100,7 +111,7 @@ function minus(id, nombre, categoria) {
 						spinner.style.display = 'none';
 						botonMinus.disabled = false;
 						botonPlus.disabled = false;
-					}, 900);
+					}, 500);
 				})
 				.catch(error => {
 					console.error("Error al hacer PUT:", error);
@@ -119,7 +130,7 @@ function eliminarDelCarrito(id, nombre, categoria) {
 	var carrito = document.getElementById("cant");
 	var div = document.getElementById("item-" + id);
 	const spinner = document.getElementById('spinner-eliminar-' + id);
-	var cantidadIndividual = document.getElementById(id);
+	var cantidadIndividual = document.getElementById("cantidad_" + id);
 	if (parseInt(cantidadIndividual.value) === 0) {
 		cantidadIndividual.value = 1;
 	}
@@ -128,7 +139,10 @@ function eliminarDelCarrito(id, nombre, categoria) {
 
 	// deshabilita el div
 	div.style.pointerEvents = "none";
-	var cont = "<h5><a class='' id='" + nombre + "' href='/Tienda/Item/" + categoria + "-" + id + "-" + nombre + "'>" + nombre + "</a> ha sido removido del carrito.</h5>";
+	var cont = "<h5><a class='' id='" + nombre +
+		"' href='/Tienda/Item/" + categoria +
+		"-" + id + "-" + nombre + "'>" + nombre +
+		"</a> ha sido removido del carrito. <a onclick='devolverAlCarrito(\"" + id + "\")' class='deshacer'>Deshacer</a></h5>";
 
 	// Muestra el spinner
 	spinner.style.display = 'flex';
@@ -156,23 +170,21 @@ function eliminarDelCarrito(id, nombre, categoria) {
 				subtotal.innerHTML = parseFloat(subtotal.innerHTML) - parseFloat(total.innerHTML.split("₡")[1]);
 				div.style.pointerEvents = "";
 				div.innerHTML = cont;
-			}, 1000);
+			}, 500);
 		})
 		.catch(error => {
 			console.error("Error al hacer PUT:", error);
 		});
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-	consultarDireccionDeterminada();
-});
-
 function consultarDireccionDeterminada() {
 	fetch("/api/direccionapi/determinada", {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
-		}
+		},
+		credentials: 'include',
+		cache: "no-store"
 	})
 		.then(response => response.json())
 		.then(data => {
@@ -192,5 +204,36 @@ function consultarDireccionDeterminada() {
 		})
 		.catch(error => {
 			console.error("Error al hacer GET:", error);
+		});
+}
+
+function devolverAlCarrito(id) {
+	var cantidadTotal = document.getElementById("cantidad-items-carrito");
+	var subTotal = document.getElementById("precioSubtotal");
+	var div = document.getElementById("item-" + id);
+	var carrito = document.getElementById("cant");
+	fetch("/api/carritoapi/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		credentials: 'include',
+		body: JSON.stringify({
+			IdUsuario: ':)',
+			IdProducto: id,
+			cantidad: 1
+		})
+	})
+		.then(response => {
+			if (response.ok) {
+				carrito.innerHTML = parseInt(carrito.innerHTML) + 1;
+				div.innerHTML = contenidoReserva["item-" + id];
+				var unitario = document.getElementById("unitario_" + id).innerHTML.split("₡")[1];
+				subTotal.innerHTML = parseFloat(subTotal.innerHTML) + parseFloat(unitario);
+				cantidadTotal.innerHTML = parseInt(cantidadTotal.innerHTML) + 1;
+			}
+		})
+		.catch(error => {
+			console.error("Error al hacer POST:", error);
 		});
 }

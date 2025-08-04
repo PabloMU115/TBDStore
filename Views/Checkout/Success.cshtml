@@ -1,0 +1,62 @@
+﻿@using TBD.Models.ModelRequest;
+@model CheckoutSuccessRequest;
+@{
+    var total = 0;
+}
+<div style="text-align: center; margin-bottom: 20px;">
+    <h1>¡Su orden ha sido realizada de forma exitosa!</h1>
+    <h3>Número de orden: @Model.ordenId</h3>
+    <h3>Detalles de la orden:</h3>
+</div>
+<div class="success-container gap-3">
+    <div>
+        <div style="width: 400px; max-width: 400px; display: flex; flex-wrap: wrap; justify-content: center; border: 1px solid white; border-radius: 8px; height: auto;">
+            <div class="d-flex gap-2">
+                <div class="">
+                    <h4>Items:</h4>
+                    @foreach (var c in Model.productos)
+                    {
+                        <div style="">
+                            <h4 style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                @(c.NombreProducto)
+                            </h4>
+                        </div>
+                    }
+                    
+                </div>
+                <div>
+                    <h4>Cantidad:</h4>
+                    @foreach (var c in Model.cantidades)
+                    {
+                        <h4>@c</h4>
+                    }
+                    <h4>Total = </h4>
+                </div>
+                <div>
+                    <h4>Precio:</h4>
+                    @for (var i = 0 ; i < Model.cantidades.Count(); i++)
+                    {
+                        <h4>₡@((int)(Model.cantidades[i] * Model.productos[i].Precio))</h4>
+                        total += (int)(Model.cantidades[i] * Model.productos[i].Precio);
+                    }
+                    <h4>₡@total</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Contenido de la orden:</h2>
+    <div class="items-checkout-success">
+        @foreach (var c in Model.productos)
+        {
+            <a class="item-success"
+               asp-controller="Producto"
+               asp-action="GetProducto"
+               asp-route-id="@c.IdProducto"
+               asp-route-nombre="@c.NombreProducto"
+               asp-route-idCategoria="@c.IdCategoria">
+                <h4>@c.NombreProducto</h4>
+                <img class="img-checkout" src="@c.ImagenUrl">
+            </a>
+        }
+    </div>
+</div>

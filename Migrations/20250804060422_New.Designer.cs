@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TBD.Data;
 
@@ -11,9 +12,11 @@ using TBD.Data;
 namespace TBD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804060422_New")]
+    partial class New
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,21 +303,6 @@ namespace TBD.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<DateTime>("fechaEnviado")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("fechaPedido")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("numeroDeGuia")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("paypalID")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
                     b.HasKey("idOrden");
 
                     b.HasIndex("IdUsuario");
@@ -335,8 +323,23 @@ namespace TBD.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("IdUsuario")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<int>("cantidad")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("fechaEnviado")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("fechaPedido")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("paypalID")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("precioUnitario")
                         .HasColumnType("int");
@@ -346,6 +349,8 @@ namespace TBD.Migrations
                     b.HasIndex("IdOrden");
 
                     b.HasIndex("IdProducto");
+
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Pedidos");
                 });
@@ -642,9 +647,17 @@ namespace TBD.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TBD.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Orden");
 
                     b.Navigation("Producto");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("TBD.Models.Producto", b =>

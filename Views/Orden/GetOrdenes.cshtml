@@ -1,0 +1,93 @@
+﻿@using TBD.Models.ModelRequest;
+@model AllPedidosRequest
+@{
+}
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Pendiente).Count() > 0)
+{
+    <h2>Ordenes pendientes</h2>
+    <div class="d-flex flex-column gap-4 mt-3 mb-5">
+        @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Pendiente))
+        {
+            <div style="">
+            <h3>Número de orden: @o.idOrden</h3>
+            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+            <h4>Id transacción paypal: @o.paypalID</h4>
+            <div class="d-flex gap-2">
+                @foreach (var producto in Model.productos[o.idOrden])
+                {
+                    <a class="item-success"
+                       asp-controller="Producto"
+                       asp-action="GetProducto"
+                       asp-route-id="@producto.IdProducto"
+                       asp-route-nombre="@producto.NombreProducto"
+                       asp-route-idCategoria="@producto.IdCategoria">
+                        <h4>@producto.NombreProducto</h4>
+                        <img class="img-checkout" src="@producto.ImagenUrl">
+                    </a>
+                }
+            </div>
+        </div>
+        }
+    </div>
+} 
+
+@if(Model.ordenes.Where(p => p.Estado == EstadoPedido.Enviado).Count() > 0)
+{
+    <h2>Ordenes enviadas</h2>
+    <div class="d-flex flex-column gap-4 mt-3 mb-5">
+        @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Enviado))
+        {
+            <div style="">
+                <h3>Número de orden: @o.idOrden</h3>
+                <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                <h4>Id transacción paypal: @o.paypalID</h4>
+                <h4>Número de guía: @o.numeroDeGuia</h4>
+                <div class="d-flex gap-2">
+                    @foreach (var producto in Model.productos[o.idOrden])
+                    {
+                        <a class="item-success"
+                           asp-controller="Producto"
+                           asp-action="GetProducto"
+                           asp-route-id="@producto.IdProducto"
+                           asp-route-nombre="@producto.NombreProducto"
+                           asp-route-idCategoria="@producto.IdCategoria">
+                            <h4>@producto.NombreProducto</h4>
+                            <img class="img-checkout" src="@producto.ImagenUrl">
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Entregado).Count() > 0)
+{
+    <h2>Ordenes entregadas</h2>
+    @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Entregado))
+    {
+        <h3>@o.idOrden</h3>
+        <h3>@o.fechaPedido.ToString().Split(" ")[0]</h3>
+        <h3>@o.fechaEnviado.ToString().Split(" ")[0]</h3>
+        <h4>@o.paypalID</h4>
+        foreach (var producto in Model.productos[o.idOrden])
+        {
+            <img src="@producto.ImagenUrl" style="width: 100px; height: 100px;"></img>
+        }
+    }
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Cancelado).Count() > 0)
+{
+    <h2>Ordenes canceladas</h2>
+    @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Cancelado))
+    {
+        <h3>@o.idOrden</h3>
+        <h3>@o.fechaPedido.ToString().Split(" ")[0]</h3>
+        <h4>@o.paypalID</h4>
+        foreach (var producto in Model.productos[o.idOrden])
+        {
+            <img src="@producto.ImagenUrl" style="width: 100px; height: 100px;"></img>
+        }
+    }
+}

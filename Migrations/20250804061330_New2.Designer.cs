@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TBD.Data;
 
@@ -11,9 +12,11 @@ using TBD.Data;
 namespace TBD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804061330_New2")]
+    partial class New2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,21 +303,6 @@ namespace TBD.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<DateTime>("fechaEnviado")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("fechaPedido")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("numeroDeGuia")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("paypalID")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
                     b.HasKey("idOrden");
 
                     b.HasIndex("IdUsuario");
@@ -337,6 +325,17 @@ namespace TBD.Migrations
 
                     b.Property<int>("cantidad")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("fechaEnviado")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("fechaPedido")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("paypalID")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("precioUnitario")
                         .HasColumnType("int");

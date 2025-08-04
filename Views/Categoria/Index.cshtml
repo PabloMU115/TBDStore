@@ -85,12 +85,30 @@
 									 style="max-width: 150px; max-height: 150px;"
 									 class="mx-auto d-block">
 							</div>
-							<div class="text-center mb-2" id="nombre_@c.IdProducto" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
+							<div class="text-center" id="nombre_@c.IdProducto" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
 								<h5 id="precio_busqueda">₡@c.Precio</h5>
 							</div>
-							<div class="text-center mb-2 mt-2">
+							<div class="text-center mt-2">
 								<h5 class="producto-link-texto">@c.NombreProducto</h5>
 							</div>
+							@if (c.StockDisponible > 10)
+							{
+								<div class="mb-2" style="color: lawngreen">
+									<h5>En stock</h5>
+								</div>
+							}
+							@if (c.StockDisponible == 0)
+							{
+								<div class="mb-2" style="color: red">
+									<h5>Agotado</h5>
+								</div>
+							}
+							@if (c.StockDisponible <= 10 && c.StockDisponible > 0)
+							{
+								<div class="mb-2" style="color: orange">
+									<h5>Quedan pocos</h5>
+								</div>
+							}
 						</div>
 					</a>
 				</div>

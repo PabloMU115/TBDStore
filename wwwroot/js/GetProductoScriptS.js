@@ -2,6 +2,11 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+document.addEventListener("DOMContentLoaded", function () {
+	accionesWishList(document.getElementById("etiqueta-id").innerText, false);
+});
+
+
 function plus() {
 	document.getElementById("cantidad-input").stepUp(1);
 }
@@ -10,17 +15,24 @@ function minus() {
 	document.getElementById("cantidad-input").stepDown(1);
 }
 
-function añadirAlCarrito(id) {
+function accionesCarrito(id) {
 	const cantidad = document.getElementById("cantidad-input").value;
-	buscar(id).then(resultado => {
-		if (!resultado) {
-			insertarAlCarrito(id, cantidad);
-		}
-		else {
-			editarCarrito(id, cantidad);
-		}
-
-	});
+	fetch("/api/carritoapi/" + id, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		credentials: 'include',
+	})
+		.then(response => {
+			// Verificar si la respuesta fue exitosa
+			if (!response.ok) {
+				insertarAlCarrito(id, cantidad);
+			}
+			else {
+				editarCarrito(id, cantidad);
+			}
+		});
 }
 
 function insertarAlCarrito(id, cantidad) {
@@ -71,36 +83,6 @@ function editarCarrito(id, cantidad) {
 		});
 }
 
-function buscar(id) {
-	return fetch("/api/carritoapi/" + id, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		credentials: 'include',
-	})
-		.then(response => {
-			// Verificar si la respuesta fue exitosa
-			if (!response.ok) {
-				// Si no es 2xx (éxito), manejar el error, como el 404 (Not Found)
-				throw new Error('Error: ' + response.status + ' - ' + response.statusText);
-			}
-			return response.json(); // Si la respuesta es exitosa, procesamos el JSON
-		})
-		.then(data => {
-			console.log('Datos recibidos:', data);
-			return true;  // Puedes hacer algo con los datos aquí
-		})
-		.catch(error => {
-			console.error("Error al hacer GET:", error);
-			// Si ocurre un error, como un 404, manejarlo aquí
-			if (error.message.includes("404")) {
-				// O lo que desees hacer en caso de no encontrar el recurso
-			}
-			return false;  // Retorna false si hay error
-		});
-}
-
 
 // Función para abrir el alert con efecto fade
 function openAlert(mensaje) {
@@ -140,4 +122,72 @@ function check() {
 	if (parseInt(input.value) < 1) {
 		input.value = 1;
 	}
+}
+
+function accionesWishList(id,val) {
+	fetch("/api/WishListApi/" + id, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		credentials: 'include',
+		cache: "no-store"
+	})
+		.then(response => {
+			// Verificar si la respuesta fue exitosa
+			if (!response.ok) {
+				console.log("No encontrado");
+				document.getElementById("agregar-wishlist").style.visibility = "visible";
+				document.getElementById("eliminar-wishlist").style.visibility = "hidden";
+				if (val) {
+					agregarWishlist(id);
+				}
+			}
+			else {
+				console.log("Encontrado");
+				document.getElementById("agregar-wishlist").style.visibility = "hidden";
+				document.getElementById("eliminar-wishlist").style.visibility = "visible";
+				if (val) {
+					eliminarWishlist(id);
+				}
+			}
+		});
+}
+
+function agregarWishlist(id) {
+	fetch("/api/wishlistapi/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		credentials: 'include',
+		body: JSON.stringify({
+			IdUsuario: ':)',
+			IdProducto: id
+		})
+	})
+		.then(response => {
+			document.getElementById("agregar-wishlist").style.visibility = "hidden";
+			document.getElementById("eliminar-wishlist").style.visibility = "visible";
+		})
+		.catch(error => {
+			console.error("Error al hacer POST:", error);
+		});
+}
+
+function eliminarWishlist(id) {
+	fetch("/api/wishlistapi/"+id, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		credentials: 'include'
+	})
+		.then(response => {
+			document.getElementById("agregar-wishlist").style.visibility = "visible";
+			document.getElementById("eliminar-wishlist").style.visibility = "hidden";
+		})
+		.catch(error => {
+			console.error("Error al hacer DELETE:", error);
+		});
 }

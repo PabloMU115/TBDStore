@@ -11,8 +11,10 @@
 			<h4 class="mb-0">Inicio</h4>
 		</a>
 		<h4 class="mb-0">
-			/<a asp-controller="Home"
-				asp-action="Tienda"
+			/<a asp-controller="Categoria"
+				asp-action="ListarCategorias"
+				asp-route-pageNumber="1"
+				asp-route-showAll="@false"
 				style="text-decoration: none; font-size: 20px !important;"> Todas las categorias
 			</a> / Resultados "@Model.Busqueda"
 		</h4>
@@ -111,12 +113,30 @@ else
 									 style="max-width: 150px; max-height: 150px;"
 									 class="mx-auto d-block">
 							</div>
-							<div class="text-center mb-2" id="nombre_@c.Id" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
+							<div class="text-center" id="nombre_@c.Id" style="border: 1px solid aliceblue; background-color:aliceblue; color:#1C2833;">
 								<h5 id="precio_busqueda">₡@c.Precio</h5>
 							</div>
-							<div class="text-center mb-2 mt-2">
+							<div class="text-center">
 								<h5 class="producto-link-texto">@c.Nombre</h5>
 							</div>
+							@if (c.Stock > 10)
+							{
+								<div class="mb-2" style="color: lawngreen">
+									<h5>En stock</h5>
+								</div>
+							}
+							@if (c.Stock == 0)
+							{
+								<div class="mb-2" style="color: red">
+									<h5>Agotado</h5>
+								</div>
+							}
+							@if (c.Stock <= 10 && c.Stock > 0)
+							{
+								<div class="mb-2" style="color: orange">
+									<h5>Quedan pocos</h5>
+								</div>
+							}
 						</div>
 					</a>
 				</div>

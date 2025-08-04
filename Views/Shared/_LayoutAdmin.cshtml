@@ -1,0 +1,110 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TBD.Models;
+@using TBD.Models.ViewModels;
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+@{
+    var urlActual = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TBD</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/layoutAdmin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TBD.styles.css" asp-append-version="true" />
+    <!-- Font Awesome 6.7.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@@fortawesome/fontawesome-free@6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+</head>
+<body>
+    <header style="">
+        <nav class="navbar border-bottom box-shadow">
+            <div class="d-flex justify-content-between w-100">
+                <div class="d-flex">
+                    <a class="" asp-area="" asp-controller="Home" asp-action="AdminDashboard">
+                        <img src="~/images/logo.png" alt="Logo home" style="max-height: 100px; max-width: 100px;">
+                    </a>
+					<button class="navbar-toggler custom-toggler collapsed mt-2" type="button"
+                            style="margin-left: 10px;"
+							data-bs-toggle="offcanvas" 
+                            data-bs-target="#sidebarMenu"
+                            aria-controls="sidebarMenu"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+						<span class="bar top-bar"></span>
+						<span class="bar middle-bar"></span>
+						<span class="bar bottom-bar"></span>
+					</button>
+					<!-- Contenido del sidebar/navbar -->
+                    <div class="offcanvas-custom offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+                        <div class="offcanvas-header border-bottom">
+                            <a class="" asp-area="" asp-controller="Home" asp-action="AdminDashboard">
+                                <img src="~/images/logo.png" alt="Logo home" style="max-height: 100px; max-width: 100px;">
+                            </a>
+                            <button class="navbar-toggler custom-toggler mb-3" type="button"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#sidebarMenu"
+                                    aria-controls="sidebarMenu"
+                                    aria-expanded="false"
+                                    aria-label="Toggle navigation">
+                                <span class="bar top-bar"></span>
+                                <span class="bar middle-bar"></span>
+                                <span class="bar bottom-bar"></span>
+                            </button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav">
+                                <li class="mb-4 mt-3">
+                                    <a class="enlace-admin" asp-area="" asp-controller="Producto" asp-action="GestionarProductos">
+                                        Gestionar Productos
+                                    </a>
+                                </li>
+                                <li class="mb-4">
+                                    <a class="enlace-admin" asp-area="" asp-controller="Categoria" asp-action="GestionarCategorias">
+                                        Gestionar Categorias
+                                    </a>
+                                </li>
+                                <li class="mb-4">
+                                    <a class="enlace-admin" asp-area="" asp-controller="Proveedor" asp-action="GestionarProveedores">
+                                        Gestionar Proveedores
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex mt-3">
+                    <!-- Login / cuenta -->
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="main-container" class="">
+		<main role="main" class="">
+			@RenderBody()
+		</main>
+	</div>
+
+	<footer class="border-top footer text-muted">
+		<div class="" style="">
+			&copy; 2025 - TBD - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+		</div>
+	</footer>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

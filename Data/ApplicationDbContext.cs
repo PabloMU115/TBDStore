@@ -41,6 +41,10 @@ namespace TBD.Data
         public DbSet<Carrito> Carrito { get; set; }
         public DbSet<WishList> ListaDeseos { get; set; }
         public DbSet<Direccion> Direcciones { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
+        public DbSet<Orden> Ordenes { get; set; }
+        public DbSet<ContadorVistas> ContadorVistas { get; set; }
+        public DbSet<HistorialVentas> HistorialVentas { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
     }
 }

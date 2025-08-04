@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TBD.Data;
+using TBD.Models.ViewModels;
 
 
-namespace TBD.Models.ViewModels
+namespace TBD.Models.ViewComponents
 {
     public class BarraDeBusquedaViewComponent : ViewComponent
     {

@@ -13,7 +13,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TBD</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @if (User.IsInRole("admin") && SignInManager.IsSignedIn(User))
+    {
+        <link rel="stylesheet" href="~/css/layoutAdmin.css" asp-append-version="true" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    }
     <link rel="stylesheet" href="~/TBD.styles.css" asp-append-version="true" />
     <!-- Font Awesome 6.7.2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@@fortawesome/fontawesome-free@6.7.2/css/all.min.css" rel="stylesheet">
@@ -50,8 +57,8 @@
                 <div class="d-flex mt-3">
                     @if (User.IsInRole("usuario"))
                     {
-                        <div onclick="window.location.href='/'" style="cursor: pointer; display: flex; flex-direction: column;">
-                            <a class="nav-link" style="font-size:16px !important; margin-bottom: 0px !important;" asp-controller="" asp-action="" aria-expanded="false">
+                        <div title="Lista de deseos" onclick="window.location.href='/WishList'" style="cursor: pointer; display: flex; flex-direction: column;">
+                            <a class="nav-link-heart" style="" asp-controller="WishList" asp-action="Index" aria-expanded="false">
                                 <i class="fa-solid fa-heart"></i>
                             </a>
                         </div>
@@ -77,7 +84,7 @@
             </div>
         </nav>
     </header>
-	<div id="main-container" class="container-fluid mx-0 px-0">
+	<div id="main-container" class="container-fluid mx-0 px-0" style="margin-top: 70px;">
 		<main role="main" class="">
 			@RenderBody()
 		</main>
@@ -88,6 +95,48 @@
 			&copy; 2025 - TBD - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 		</div>
 	</footer>
+    <script>
+        function setCookie(nombre, valor, dias) {
+          const fecha = new Date();
+          fecha.setTime(fecha.getTime() + (dias*24*60*60*1000));
+          document.cookie = `${nombre}=${valor}; expires=${fecha.toUTCString()}; path=/`;
+            fetch("/api/contadorvistasapi/", {
+		        method: "POST",
+		        headers: {
+			        "Content-Type": "application/json"
+		        },
+		        credentials: 'include',
+		        body: JSON.stringify({
+                    idVista: valor,
+                    fecha: `@DateTime.Now.ToString("yyyy-MM-dd")`
+		        })
+	        })
+		        .then(response => {
+                    if(response.ok){
+                        console.log("Vista añadida");
+                    }
+                })
+		        .catch(error => {
+			        console.error("Error al hacer POST:", error);
+		        });
+        }
+
+        function getCookie(nombre) {
+          const cookies = document.cookie.split(';');
+          for (let c of cookies) {
+            let [key, value] = c.trim().split('=');
+            if (key === nombre) return value;
+          }
+          return false;
+        }
+
+        const valor = getCookie("miCookie");
+        if (valor) {
+          console.log("La cookie existe y no ha expirado:", valor);
+        } else {
+          setCookie("miCookie", '@Guid.NewGuid()', 1);
+        }
+    </script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

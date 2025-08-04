@@ -21,6 +21,9 @@ namespace TBD.Models
         [Range(0, int.MaxValue)]
         public int StockDisponible { get; set; }
 
+        [Range(0, 999999)]
+        public int cantidadVendidos { get; set; } = 0;
+
         //agregar luego
         //public DateTime fechaAgregado { get; set; }
 

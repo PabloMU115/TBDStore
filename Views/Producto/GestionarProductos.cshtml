@@ -1,6 +1,14 @@
 ﻿@using TBD.Models.ViewModels
 @model AgregarProductoViewModel
+
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
 @{
+	if (User.IsInRole("admin"))
+	{
+		Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+	}
 }
 <!-- Botón para abrir el modal -->
 <div class="container card p-4" style="color:white;">

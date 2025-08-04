@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TBD.Data;
 
-namespace TBD.Models.ViewModels
+namespace TBD.Models.ViewComponents
 {
     public class TotalCarritoViewComponent : ViewComponent
     {

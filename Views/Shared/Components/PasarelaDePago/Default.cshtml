@@ -1,0 +1,89 @@
+﻿@model string
+@{
+}
+<script src="https://www.paypal.com/sdk/js?client-id=@Model&currency=USD"></script>
+
+<div id="notification-container"></div>
+<div id="paypal-button-container"></div>
+
+<script>
+    function getCart(){
+        var contenedor = document.getElementById("carrito-items");
+        var arr = Array.from(contenedor.children);
+        let carrito = [];
+        var index = 0;
+        for(let i = 1; i < arr.length; i++){
+            var idP = arr[i].id.split("-")[1];
+            carrito[index] = {
+                id: idP,
+                cantidad: parseInt(document.getElementById("cantidad_"+idP).value),
+                precioUnitario: parseInt(document.getElementById("unitario_"+idP).innerText.split("₡")[1]),
+                precioTotal: parseInt(document.getElementById("total_"+idP).innerText.split("₡")[1])
+            };
+            index++;
+        }
+        return carrito;
+    }
+
+    paypal.Buttons({
+        async createOrder() {
+            const response = await fetch("/Checkout/CreateOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", 
+                },
+                body: JSON.stringify(getCart())
+            });
+
+            const order = await response.json();
+
+            return order.id;
+        },
+
+        async onApprove(data) {
+            // Capture the funds from the transaction.
+            const response = await fetch("/Checkout/Complete", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                orderID: data.orderID,
+                contenido: getCart()
+              })
+            });
+
+            const details = await response.json();
+            if(details.status == "success") {
+                window.location.href = "/Checkout/Success/"+details.id;
+            }
+            else{
+                document.getElementById("notification-container").innerHTML = `
+                <div class='alert alert-success alert-dismissible fade show' role='alert'>
+                    <strong>Operación fallida</strong>
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>
+                `;
+            }
+        },
+
+        onCancel(data) {
+            document.getElementById("notification-container").innerHTML = `
+            <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                <strong>Payment Canceled!</strong>
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>
+            `;
+        },
+
+        onError(err) {
+            document.getElementById("notification-container").innerHTML = `
+            <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                <strong>An error occurred! Please retry later.</strong>
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>
+            `;
+        }
+
+    }).render('#paypal-button-container');
+</script>

@@ -12,8 +12,8 @@ using TBD.Data;
 namespace TBD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250713100049_First")]
-    partial class First
+    [Migration("20250804071839_New3")]
+    partial class New3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,6 +195,23 @@ namespace TBD.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("TBD.Models.ContadorVistas", b =>
+                {
+                    b.Property<string>("idVista")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("fecha")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("idVista");
+
+                    b.ToTable("ContadorVistas");
+                });
+
             modelBuilder.Entity("TBD.Models.Direccion", b =>
                 {
                     b.Property<string>("IdDireccion")
@@ -246,6 +263,92 @@ namespace TBD.Migrations
                     b.ToTable("Direcciones");
                 });
 
+            modelBuilder.Entity("TBD.Models.HistorialVentas", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IdProducto")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("cantidadVendida")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("fechaVenta")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdProducto");
+
+                    b.ToTable("HistorialVentas");
+                });
+
+            modelBuilder.Entity("TBD.Models.Orden", b =>
+                {
+                    b.Property<string>("idOrden")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdUsuario")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("direccion")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("fechaEnviado")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("fechaPedido")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("paypalID")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("idOrden");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Ordenes");
+                });
+
+            modelBuilder.Entity("TBD.Models.Pedido", b =>
+                {
+                    b.Property<string>("idPedido")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IdOrden")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IdProducto")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("precioUnitario")
+                        .HasColumnType("int");
+
+                    b.HasKey("idPedido");
+
+                    b.HasIndex("IdOrden");
+
+                    b.HasIndex("IdProducto");
+
+                    b.ToTable("Pedidos");
+                });
+
             modelBuilder.Entity("TBD.Models.Producto", b =>
                 {
                     b.Property<string>("IdProducto")
@@ -278,6 +381,9 @@ namespace TBD.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockDisponible")
+                        .HasColumnType("int");
+
+                    b.Property<int>("cantidadVendidos")
                         .HasColumnType("int");
 
                     b.HasKey("IdProducto");
@@ -499,6 +605,47 @@ namespace TBD.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("TBD.Models.HistorialVentas", b =>
+                {
+                    b.HasOne("TBD.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("IdProducto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("TBD.Models.Orden", b =>
+                {
+                    b.HasOne("TBD.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("TBD.Models.Pedido", b =>
+                {
+                    b.HasOne("TBD.Models.Orden", "Orden")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("IdOrden")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TBD.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("IdProducto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Orden");
+
+                    b.Navigation("Producto");
+                });
+
             modelBuilder.Entity("TBD.Models.Producto", b =>
                 {
                     b.HasOne("TBD.Models.Categoria", "Categoria")
@@ -540,6 +687,11 @@ namespace TBD.Migrations
             modelBuilder.Entity("TBD.Models.Categoria", b =>
                 {
                     b.Navigation("Productos");
+                });
+
+            modelBuilder.Entity("TBD.Models.Orden", b =>
+                {
+                    b.Navigation("Pedidos");
                 });
 
             modelBuilder.Entity("TBD.Models.Proveedor", b =>

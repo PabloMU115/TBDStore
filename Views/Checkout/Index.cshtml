@@ -1,0 +1,31 @@
+﻿@* @model string
+@{
+}
+<script src="https://www.paypal.com/sdk/js?client-id=@Model&currency=USD"></script>
+
+<div id="paypal-button-container"></div>
+
+<script>
+    console.log(document.getElementById("carrito-items"));
+    console.log();
+    paypal.Buttons({
+        async createOrder() {
+            const response = await fetch("/Checkout/CreateOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    cart: [{
+                        sku: "YOUR_PRODUCT_STOCK_KEEPING_UNIT",
+                        quantity: "YOUR_PRODUCT_QUANTITY",
+                    }]
+                })
+            });
+
+            const order = await response.json();
+
+            return order.id;
+        }
+    }).render('#paypal-button-container');
+</script> *@

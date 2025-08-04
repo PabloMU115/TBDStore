@@ -2,6 +2,8 @@ using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+//using PaypalServerSdk.Standard;
+//using PaypalServerSdk.Standard.Authentication;
 using TBD.Data;
 using TBD.Models;
 using TBD.Services;
@@ -21,8 +23,27 @@ builder.Services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireCo
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Se a�ade el servicio que env�a correos
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+//// Se a�ade el servicio que env�a correos
+//builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+////Servicio de PayPal
+//builder.Services.AddSingleton<PaypalServerSdkClient>(sp =>
+//{
+//    return new PaypalServerSdkClient.Builder()
+//        .ClientCredentialsAuth(
+//            new ClientCredentialsAuthModel.Builder(
+//                "OAuthClientId",
+//                "OAuthClientSecret"
+//            )
+//            .Build())
+//        .Environment(PaypalServerSdk.Standard.Environment.Sandbox)
+//        .LoggingConfig(config => config
+//            .LogLevel(LogLevel.Information)
+//            .RequestConfig(reqConfig => reqConfig.Body(true))
+//            .ResponseConfig(respConfig => respConfig.Headers(true))
+//        )
+//        .Build();
+//});
 
 builder.Services.AddControllersWithViews();
 

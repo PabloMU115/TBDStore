@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using TBD.Data;
 using TBD.Models;
-using TBD.Models.ViewModels;
 using TBD.Models.ModelRequest;
-using Microsoft.AspNetCore.Authorization;
+using TBD.Models.ViewModels;
 
 namespace TBD.Controllers.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public class ProductoApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -129,5 +130,41 @@ namespace TBD.Controllers.ApiControllers
             return Ok(new { result = true });
         }
 
+        //opcional: crearle un DTO luego, que solo incluya lo que se necesite obtener de cada producto
+        [HttpGet("all/{mes}")]
+        public ActionResult getAll(int mes) {
+            var productos = (from p in _context.Productos
+                             join c in _context.HistorialVentas
+                             on p.IdProducto equals c.IdProducto
+                             where c.fechaVenta.Month == mes
+                             select new VentasRequest {
+                                 NombreProducto = p.NombreProducto,
+                                 Precio = p.Precio,
+                                 cantidadVendidos = c.cantidadVendida,
+                                 ventas = p.Precio*p.cantidadVendidos
+                             }).ToList().OrderByDescending(p => p.cantidadVendidos);
+            var totalVendidos = 0;
+            decimal gananciaTotal = 0;
+
+            foreach (var c in productos) {
+                totalVendidos += c.cantidadVendidos;
+                gananciaTotal = gananciaTotal + c.ventas;
+            }
+            return Ok(new { productos, totalVendidos, gananciaTotal });
+        }
+
+        [HttpGet("topTen/{mes}")]
+        public async Task<IActionResult> getTopTen(int mes)
+        {
+            var productos = (from p in _context.Productos 
+                             join c in _context.HistorialVentas on 
+                             p.IdProducto equals c.IdProducto
+                             where c.fechaVenta.Month == mes &&
+                             p.cantidadVendidos > 0 select new VentasRequest {
+                                 NombreProducto = p.NombreProducto,
+                                 cantidadVendidos = c.cantidadVendida
+                             }).Take(10).ToList();
+            return Ok(productos);
+        }
     }
 }

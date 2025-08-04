@@ -1,8 +1,15 @@
 ﻿@using TBD.Models.ViewModels
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<Usuario> UserManager
 @model ProductoViewModel
-
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+@{
+	if (User.IsInRole("admin"))
+	{
+		Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+	}
+}
+<span id="etiqueta-id" hidden>@Model.Id</span>
 <div class="d-flex align-items-center flex-wrap gap-2 mt-2">
 	<a class="text-decoration-none" asp-controller="Home" asp-action="Index">
 		<h4 class="mb-0">Inicio</h4>
@@ -53,7 +60,23 @@ style="">
 	<!-- Columna derecha: Controles de compra -->
 	<div class="col-lg-4 d-flex justify-content-center align-items-center">
 		<div id="producto-card" class="producto-card" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-			<div id="precio" class="precio">Precio: ₡@Model.Precio</div>
+			
+			<div class="text-center" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
+				<a id="agregar-wishlist"
+				   onclick="accionesWishList('@Model.Id',true)"
+				   onmouseover="shape(0)"
+				   onmouseout="shape(1)"
+				   style="position: absolute; cursor: pointer; margin-bottom: 8px; text-decoration: none;">
+					Añadir a favoritos <i id="heart-s" class="fa-solid fa-heart"></i>
+				</a>
+
+				<a id="eliminar-wishlist"
+				   onclick="accionesWishList('@Model.Id',true)"
+				   style="position: absolute; visibility: hidden; cursor: pointer; text-decoration: none;">
+					Eliminar de favoritos <i class="fa-solid fa-square-minus"></i>
+				</a>
+			</div>
+
 
 			<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
 
@@ -69,9 +92,10 @@ style="">
 					<button id="btn-plus" onclick="plus()">+</button>
 				</div>
 				<div id="stock" class="stock">Cantidad disponible: @Model.Stock</div>
+				<div id="precio" class="precio d-flex">Precio: ₡@Model.Precio</div>
 				<div style="width: calc(100% + 40px); border-top: 1px solid grey; box-shadow: 0 2px 4px rgba(255, 255, 255, 1);"></div>
 
-				<button id="btn-comprar" class="btn-comprar" onclick="añadirAlCarrito('@Model.Id')">
+				<button id="btn-comprar" class="btn-comprar" onclick="accionesCarrito('@Model.Id')">
 					<i class="fa-solid fa-cart-shopping"></i> Añadir al carrito
 				</button>
 			}
@@ -84,6 +108,7 @@ style="">
 					<h5 style="color: white">
 						Estamos trabajando para reabastecer las existencias....
 					</h5>
+					<div id="precio" class="precio">Precio: ₡@Model.Precio</div>
 				</div>
 			}
 		</div>
@@ -132,5 +157,16 @@ style="">
 }
 
 @section scripts {
-	<script src="~/js/GetProductoScript.js"></script>
+	<script>
+		function shape(i){
+			if(i == 0){
+				document.getElementById("heart-s").style.color = "red";
+			}
+			else{
+				document.getElementById("heart-s").style.color = "";
+			}
+		}
+	</script>
+	<script src="~/js/GetProductoScriptS.js"></script>
 }
+ 

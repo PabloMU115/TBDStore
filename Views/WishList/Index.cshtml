@@ -1,0 +1,103 @@
+﻿@using TBD.Models.ViewModels;
+@model List<WishListViewModel>;
+@{
+}
+@if (Model.Count > 0)
+{
+    <h2 id="titulo" style="text-align:center;margin-left: 10px;">Lista de deseos:</h2>
+}
+else
+{
+    <h2 style="text-align:center;margin-left: 10px;">Lista de deseos vacía</h2>
+}
+<span id="cantidad" hidden>@Model.Count</span>
+<div id="lista-completa" style="">
+    @foreach (var l in Model)
+    {
+        <div class="contenedor-wishlist mb-2" id="@l.Id">
+            <div id="item-'@l.Id'" style="margin-right: 10px; border-right: 1px solid gray; ">
+                <a class=""
+                   style="text-decoration: none;"
+                   asp-controller="Producto"
+                   asp-action="GetProducto"
+                   asp-route-id="@l.Id"
+                   asp-route-nombre="@l.Nombre"
+                   asp-route-idCategoria="@l.IdCategoria">
+                    <img src="@l.Imagen" alt="@l.Nombre"
+                         style="border-bottom-left-radius: 12px;border-top-left-radius: 12px; min-width: 110px; min-height: 110px; max-width: 110px; max-height: 110px;"
+                         class="mx-auto d-block">
+                </a>
+            </div>
+            <span hidden id="categoria-@l.Id">@l.IdCategoria</span>
+            <div class="" style="width: 100%;">
+                <div class="mt-2">
+                    <a class="nombre-elemento-Carrito"
+                       style="text-decoration: none;"
+                       asp-controller="Producto"
+                       asp-action="GetProducto"
+                       asp-route-id="@l.Id"
+                       asp-route-nombre="@l.Nombre"
+                       asp-route-idCategoria="@l.IdCategoria">
+                        <h5 style="text-align: left !important;" id="nombre-@l.Id">@l.Nombre</h5>
+                    </a>
+                </div>
+                @if (l.Stock > 0)
+                {
+                    <div class="" id="precio_@l.Id" style="">
+                        <h5>Precio: ₡@l.Precio</h5>
+                    </div>
+                    @if (l.Stock <= 10)
+                    {
+                        <div class="mb-2" id="" style="color: orange">
+                            <h5>Quedan pocos</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-2" id="" style="color: lawngreen">
+                            <h5>En stock</h5>
+                        </div>
+                    }
+                    <div class="mt-3 d-flex" style="gap: 25px;">
+                        <a class="agregar-carrito-wishlist" onclick="accionesCarrito('@l.Id')">
+                            Añadir al carrito
+                        </a>
+                        <a onclick="" style="cursor: pointer;">
+                            <i class="fa-solid fa-share-from-square"></i>
+                        </a>
+                        <div class="eliminar-wishlist">
+                            <a onclick="eliminarLista('@l.Id')" style="cursor: pointer;">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="" id="precio_@l.Id" style="">
+                        <h5>Precio: ₡@l.Precio</h5>
+                    </div>
+                    <div class="mb-2" id="" style="color: red">
+                        <h5>Agotado</h5>
+                    </div>
+                    <div class="mt-3 d-flex" style="gap: 25px;">
+                        
+                        <a onclick="" style="cursor: pointer;">
+                            <i class="fa-solid fa-share-from-square"></i>
+                        </a>
+                        <div class="eliminar-wishlist">
+                            <a onclick="eliminarLista('@l.Id')" style="cursor: pointer;">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="spinner-overlay-eliminar" id="spinner-eliminar-@l.Id" style="width:inherit !important; height:inherit !important;"></div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script src="~/js/WishListsScrip.js"></script>
+}

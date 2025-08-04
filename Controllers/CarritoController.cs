@@ -25,9 +25,7 @@ namespace TBD.Controllers
             var idUsuario = _userManager.GetUserId(User);
             var items = (from c in _context.Carrito
                          where c.IdUsuario.Equals(idUsuario)
-                         join
-                     p in _context.Productos on c.IdProducto equals p.IdProducto
-
+                         join p in _context.Productos on c.IdProducto equals p.IdProducto
                          select new CarritoViewModel
                          {
                              IdProducto = p.IdProducto,
