@@ -11,6 +11,9 @@ namespace TBD.Models.ModelRequest
         public string numeroDeGuia { get; set; }
         public DateTime fechaPedido { get; set; }
         public DateTime fechaEnviado { get; set; }
+        public DateTime fechaRecibido { get; set; }
+        public DateTime fechaReembolsado { get; set; }
+        public DateTime fechaCancelado { get; set; }
         public EstadoPedido Estado { get; set; }
     }
 

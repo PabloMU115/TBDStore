@@ -1,279 +1,415 @@
-﻿@{
+﻿@using TBD.Models.ModelRequest;
+@model AllPedidosRequest
+@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<span id="mes" hidden>@DateTime.Now.Month</span>
-<div style="display: flex; flex-direction: column;">
-    <!-- Gráfico 1 -->
-    <div style="">
-        <div class="d-flex justify-content-between">
-            <h2 id="fechaLabel" onclick="descargarExcel()" style="margin-left: 10px;"></h2>
-            <button class="topTenMonth" style="margin-right: 10px;" onclick="descargarExcel()"><i class="fa-solid fa-download"></i> Descargar Informe</button>
-        </div>
-        <h2 id="noData" class="mt-5 mb-5" style="display: none; width: 100%; text-align: center;">Hay ventas registradas para este mes</h2>
-        <canvas style="max-height: 300px;" id="graficoProductos"></canvas>
-    </div>
-    <div class="d-flex justify-content-around">
-        <a class="topTenMonth" onclick="cambiarMesTop(1)"><i class="fa-solid fa-chevron-left"></i>Mes anterior</a>
-        <a class="topTenMonth" onclick="cambiarMesTop(2)">Siguiente mes<i class="fa-solid fa-chevron-right"></i></a>
-    </div>
+@if (Model.ordenes.Count == 0)
+{
+    <h1 style="margin-left: 10px;">No posee pedidos para consultar...</h1>
+}
 
-    <!-- Gráfico 2 -->
-    <div class="mt-5" style="">
-        <h2 id="visitasLabel" style="margin-left: 10px;"></h2>
-        <h4 id="totalVistas" style="margin-left: 10px;"></h4>
-        <canvas style="max-height: 300px;" id="graficoVisitas"></canvas>
-        <div class="d-flex justify-content-around">
-            <a class="topTenMonth" onclick="cambiarMesVistas(1)"><i class="fa-solid fa-chevron-left"></i>Mes anterior</a>
-            <a class="topTenMonth" onclick="cambiarMesVistas(2)">Siguiente mes<i class="fa-solid fa-chevron-right"></i></a>
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Pendiente).Count() > 0)
+{
+    <div class="contenedor-orders">
+        <div style="margin-left: 10px; margin-bottom: 10px;" class="d-flex">
+            <h2 style="width: 250px;">Ordenes pendientes</h2>
+            <button id="boton-toggle-pendientes" class="boton-toggle" onclick="toggleCollapse('pendientes')"><h2>Mostrar menos <i class="fa-solid fa-angles-up"></i></h2></button>
+        </div>
+
+        <div id="collapse-pendientes" class="colapsable" style="border: 1px solid gray; border-radius: 8px;">
+            <div class="colapsable-content d-flex flex-column gap-4">
+                @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Pendiente))
+                {
+                    <div class="grid-orden">
+                        <div style="flex: 1; margin-right: 0px; max-width:90%; justify-items:center;">
+                            <h4>Número de orden: @o.idOrden</h4>
+                            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                            <h4>Id transacción paypal: @o.paypalID</h4>
+                            <div class="items-orders mb-3">
+                                @for (var i = 0; i < Model.productos[o.idOrden].Count(); i++)
+                                {
+                                    <div class="d-flex flex-column">
+                                        <a class="item-order-producto"
+                                           asp-controller="Producto"
+                                           asp-action="GetProducto"
+                                           asp-route-id="@Model.productos[o.idOrden][i].IdProducto"
+                                           asp-route-nombre="@Model.productos[o.idOrden][i].NombreProducto"
+                                           asp-route-idCategoria="@Model.productos[o.idOrden][i].IdCategoria">
+                                            <h4>@Model.productos[o.idOrden][i].NombreProducto</h4>
+                                            <img class="img-order-producto" src="@Model.productos[o.idOrden][i].ImagenUrl">
+                                        </a>
+                                        <h5 class="text-center">Cantidad: @Model.cantidades[o.idOrden][i]</h5>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" style="max-width: 300px; min-width: 300px;">
+                            <h2>Dirección de envío:</h2>
+                            @foreach (var z in o.direccion.Split("||"))
+                            {
+                                <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; font-size: 16px; max-width: 300px; min-width: 300px;">
+                                    @z
+                                </div>
+                            }
+                        </div>
+                        <a class="btn-confirmar-orden mt-2 mb-3"
+                           onclick="OpenModal('confirmar','@o.idOrden')">
+                            <i class="fa-solid fa-check"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Cancelado).Count() > 0)
+{
+    <div class="">
+        <div style="margin-left: 10px; margin-bottom: 10px; margin-top: 20px;" class="d-flex">
+            <h3 style="width: 350px;">Ordenes pendientes de reembolso</h3> 
+            <button id="boton-toggle-canceldas" class="boton-toggle" onclick="toggleCollapse('canceldas')"><h2>Mostrar menos <i class="fa-solid fa-angles-up"></i></h2></button>
+        </div>
+
+        <div id="collapse-canceldas" class="colapsable" style="border: 1px solid gray;">
+            <div class="colapsable-content d-flex flex-column gap-4">
+                @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Cancelado))
+                {
+                    <div class="grid-orden">
+                        <div style="flex: 1; margin-right: 0px; max-width:90%; justify-items:center;">
+                            <h4>Número de orden: @o.idOrden</h4>
+                            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se canceló el pedido: @o.fechaCancelado.ToString().Split(" ")[0]</h3>
+                            <h4>Id transacción paypal: @o.paypalID</h4>
+                            <div class="items-orders mb-3">
+                                @for (var i = 0; i < Model.productos[o.idOrden].Count(); i++)
+                                {
+                                    <div class="d-flex flex-column">
+                                        <a class="item-order-producto"
+                                           asp-controller="Producto"
+                                           asp-action="GetProducto"
+                                           asp-route-id="@Model.productos[o.idOrden][i].IdProducto"
+                                           asp-route-nombre="@Model.productos[o.idOrden][i].NombreProducto"
+                                           asp-route-idCategoria="@Model.productos[o.idOrden][i].IdCategoria">
+                                            <h4>@Model.productos[o.idOrden][i].NombreProducto</h4>
+                                            <img class="img-order-producto" src="@Model.productos[o.idOrden][i].ImagenUrl">
+                                        </a>
+                                        <h5 class="text-center">Cantidad: @Model.cantidades[o.idOrden][i]</h5>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" style="max-width: 300px; min-width: 300px;">
+                            <h2>Dirección de envío:</h2>
+                            @foreach (var z in o.direccion.Split("||"))
+                            {
+                                <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; font-size: 16px; max-width: 300px; min-width: 300px;">
+                                    @z
+                                </div>
+                            }
+                        </div>
+                        <a class="btn-reembolsar-orden mt-2 mb-3"
+                           onclick="OpenModal('reembolso','@o.idOrden')">
+                            <i class="fa-solid fa-check"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Enviado).Count() > 0)
+{
+    <div class="">
+        <div style="margin-left: 10px; margin-bottom: 10px; margin-top: 20px;" class="d-flex">
+            <h2 style="width: 250px;">Ordenes Enviadas</h2>
+            <button id="boton-toggle-enviados" class="boton-toggle" onclick="toggleCollapse('enviados')"><h2>Mostrar menos <i class="fa-solid fa-angles-up"></i></h2></button>
+        </div>
+
+        <div id="collapse-enviados" class="colapsable" style="border: 1px solid gray;">
+            <div class="colapsable-content d-flex flex-column gap-4">
+                @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Enviado))
+                {
+                    <div class="grid-orden">
+                        <div style="flex: 1; margin-right: 0px; max-width:90%; justify-items:center;">
+                            <h3>Número de orden: @o.idOrden</h3>
+                            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se envió el pedido: @o.fechaEnviado.ToString().Split(" ")[0]</h3>
+                            <h3>Número de guía: @o.numeroDeGuia</h3>
+                            <h4>Id transacción paypal: @o.paypalID</h4>
+                            <div class="items-orders mb-3">
+                                @for (var i = 0; i < Model.productos[o.idOrden].Count(); i++)
+                                {
+                                    <div class="d-flex flex-column">
+                                        <a class="item-order-producto"
+                                           asp-controller="Producto"
+                                           asp-action="GetProducto"
+                                           asp-route-id="@Model.productos[o.idOrden][i].IdProducto"
+                                           asp-route-nombre="@Model.productos[o.idOrden][i].NombreProducto"
+                                           asp-route-idCategoria="@Model.productos[o.idOrden][i].IdCategoria">
+                                            <h4>@Model.productos[o.idOrden][i].NombreProducto</h4>
+                                            <img class="img-order-producto" src="@Model.productos[o.idOrden][i].ImagenUrl">
+                                        </a>
+                                        <h5 class="text-center">Cantidad: @Model.cantidades[o.idOrden][i]</h5>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" style="max-width: 300px; min-width: 300px;">
+                            <h2>Dirección de envío:</h2>
+                            @foreach (var z in o.direccion.Split("||"))
+                            {
+                                <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; font-size: 16px; max-width: 300px; min-width: 300px;">
+                                    @z
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Entregado).Count() > 0)
+{
+    <div class="">
+        <div style="margin-left: 10px; margin-bottom: 10px; margin-top: 20px;" class="d-flex">
+            <h2 style="width: 250px;">Ordenes Entregadas</h2>
+            <button id="boton-toggle-entregadas" class="boton-toggle" onclick="toggleCollapse('entregadas')"><h2>Mostrar menos <i class="fa-solid fa-angles-up"></i></h2></button>
+        </div>
+
+        <div id="collapse-entregadas" class="colapsable" style="border: 1px solid gray;">
+            <div class="colapsable-content d-flex flex-column gap-4">
+                @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Entregado))
+                {
+                    <div class="grid-orden">
+                        <div style="flex: 1; margin-right: 0px; max-width:90%; justify-items:center;">
+                            <h4>Número de orden: @o.idOrden</h4>
+                            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se envió el pedido: @o.fechaEnviado.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se recibió el pedido: @o.fechaRecibido.ToString().Split(" ")[0]</h3>
+                            <h4>Id transacción paypal: @o.paypalID</h4>
+                            <div class="items-orders mb-3">
+                                @for (var i = 0; i < Model.productos[o.idOrden].Count(); i++)
+                                {
+                                    <div class="d-flex flex-column">
+                                        <a class="item-order-producto"
+                                           asp-controller="Producto"
+                                           asp-action="GetProducto"
+                                           asp-route-id="@Model.productos[o.idOrden][i].IdProducto"
+                                           asp-route-nombre="@Model.productos[o.idOrden][i].NombreProducto"
+                                           asp-route-idCategoria="@Model.productos[o.idOrden][i].IdCategoria">
+                                            <h4>@Model.productos[o.idOrden][i].NombreProducto</h4>
+                                            <img class="img-order-producto" src="@Model.productos[o.idOrden][i].ImagenUrl">
+                                        </a>
+                                        <h5 class="text-center">Cantidad: @Model.cantidades[o.idOrden][i]</h5>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" style="max-width: 300px; min-width: 300px;">
+                            <h2>Dirección de envío:</h2>
+                            @foreach (var z in o.direccion.Split("||"))
+                            {
+                                <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; font-size: 16px; max-width: 300px; min-width: 300px;">
+                                @z
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ordenes.Where(p => p.Estado == EstadoPedido.Reembolsado).Count() > 0)
+{
+    <div class="">
+        <div style="margin-left: 10px; margin-bottom: 10px; margin-top: 20px;" class="d-flex">
+            <h3 style="width: 250px;">Ordenes Reembolsadas</h3>
+            <button id="boton-toggle-reembolsadas" class="boton-toggle" onclick="toggleCollapse('reembolsadas')"><h2>Mostrar menos <i class="fa-solid fa-angles-up"></i></h2></button>
+        </div>
+
+        <div id="collapse-reembolsadas" class="colapsable" style="border: 1px solid gray;">
+            <div class="colapsable-content d-flex flex-column gap-4">
+                @foreach (var o in Model.ordenes.Where(p => p.Estado == EstadoPedido.Entregado))
+                {
+                    <div class="grid-orden">
+                        <div style="flex: 1; margin-right: 0px; max-width:90%; justify-items:center;">
+                            <h3>Número de orden: @o.idOrden</h3>
+                            <h3>Fecha en que se realizó el pedido: @o.fechaPedido.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se canceló el pedido: @o.fechaCancelado.ToString().Split(" ")[0]</h3>
+                            <h3>Fecha en que se reembolsó el pedido: @o.fechaReembolsado.ToString().Split(" ")[0]</h3>
+                            <h4>Id transacción paypal: @o.paypalID</h4>
+                            <div class="items-orders mb-3">
+                                @for (var i = 0; i < Model.productos[o.idOrden].Count(); i++)
+                                {
+                                    <div class="d-flex flex-column">
+                                        <a class="item-order-producto"
+                                           asp-controller="Producto"
+                                           asp-action="GetProducto"
+                                           asp-route-id="@Model.productos[o.idOrden][i].IdProducto"
+                                           asp-route-nombre="@Model.productos[o.idOrden][i].NombreProducto"
+                                           asp-route-idCategoria="@Model.productos[o.idOrden][i].IdCategoria">
+                                            <h4>@Model.productos[o.idOrden][i].NombreProducto</h4>
+                                            <img class="img-order-producto" src="@Model.productos[o.idOrden][i].ImagenUrl">
+                                        </a>
+                                        <h5 class="text-center">Cantidad: @Model.cantidades[o.idOrden][i]</h5>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mt-2" style="max-width: 300px; min-width: 300px;">
+                            <h2>Dirección de envío:</h2>
+                            @foreach (var z in o.direccion.Split("||"))
+                            {
+                                <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; font-size: 16px; max-width: 300px; min-width: 300px;">
+                                    @z
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+
+<!-- Modal crear -->
+<div class="modal fade" id="ModalCrear" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalCrearLabel" aria-hidden="true" style="height: 100vh;background-color: transparent !important; backdrop-filter: blur(10px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCrearLabel"></h5>
+                <button type="button" class="btn-close" onclick="cerrarCrear()" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" style="height: 180px;">
+                <div class="container" id="formulario-container">
+                    <div id="formulario-direccion">
+                        <div class="" style="justify-items: center;">
+                            <h4 id="form-label" class="form-label"></h4>
+                            <div id="form-input">
+                                <label for="input-nombre-direccion" class="form-label">Inserte el número de guía de la orden para confirmar el envío</label>
+                                <input type="text" class="form-control" id="input-numero-Guia" maxlength="45" name="numeroGuia" oninput="actualizarContadorNombre(this)">
+                                <p class="" id="contador_Nombre" style="margin-bottom: 5px !important;">0/45 caracteres</p>
+                                <span id="error-nombre" class="error-text"></span>
+                            </div>
+                            <div class="mt-3" style="position: absolute;" id="reembolso">
+                                <button class="btn-reembolsar-orden" onclick="reembolso()">
+                                    <h5>Reembolsar orden</h5>
+                                </button>
+                            </div>
+                            <div class="mt-1" style="position: absolute;" id="confirmar">
+                                <button class="btn-confirmar-orden" onclick="confirmarEnvio()">
+                                    <h5>Confirmar recibido</h5>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-
-<script>
-    let nombresProductos = [];
-    let ventas = [];
-    let fechas = [];
-    let vistas = [];
-    const meses = Array.from({ length: 12 }, (_, i) =>
-      new Date(0, i).toLocaleString('es-ES', { month: 'long' })
-    );
-    let chartProductos;
-    let chartVistas;
-    let valor = parseInt(document.getElementById('mes').innerText);
-    const coloresFondo = [
-      'rgba(255, 99, 132, 0.7)',   // rojo rosado
-      'rgba(54, 162, 235, 0.7)',   // azul
-      'rgba(255, 206, 86, 0.7)',   // amarillo
-      'rgba(75, 192, 192, 0.7)',   // verde agua
-      'rgba(153, 102, 255, 0.7)',  // morado
-      'rgba(255, 159, 64, 0.7)',   // naranja
-      'rgba(201, 203, 207, 0.7)',  // gris claro
-      'rgba(90, 200, 130, 0.7)',   // verde medio
-      'rgba(255, 112, 179, 0.7)',  // rosado
-      'rgba(160, 120, 90, 0.7)'    // marrón
-    ];
-
-    const coloresBorde = coloresFondo.map(color =>
-      color.replace("0.7", "1") // Aumenta opacidad para el borde
-    );
-
-    function cambiarMesTop(z){
-        nombresProductos = [];
-        ventas = [];
-        switch(z){
-            case 1:{
-                if(valor-1 >= 0){
-                    valor -= 1;
-                }
-            }
-            break;
-            case 2:{
-                if(valor+1 <= 12){
-                    valor += 1;
-                }
-            }
-            break;
-        }
-        
-        if(valor-1 > 0){
-            document.getElementById("fechaLabel").innerText = "Top 10 productos más vendidos de "+meses[valor-1];
-        }else{
-            document.getElementById("fechaLabel").innerText = "Top 10 productos más vendidos de "+meses[0];
-        }
-        fetch("/api/productoapi/topten/"+valor, {
-            method: "GET",
-                headers: {
-                        "Content-Type": "application/json"
-                },
-                    credentials: 'include',
-                    cache: "no-store"
-                })
-                .then(response => response.json())
-                    .then(data => {
-                        if(data.length == 0){
-                            document.getElementById("noData").style.display = "";
-                            document.getElementById("graficoProductos").style.display = "none";
-                        }
-                        else{
-                            document.getElementById("noData").style.display = "none";
-                            document.getElementById("graficoProductos").style.display = "";
-                            for(let i = 0; i < data.length; i++){
-                                nombresProductos[i] = data[i].nombreProducto;
-                                ventas[i] = data[i].cantidadVendidos;
-                            }
-                            // Configuración del gráfico
-                            const ctx = document.getElementById('graficoProductos').getContext('2d');
-                            if (chartProductos) {
-                                chartProductos.destroy();
-                            }
-
-                            chartProductos = new Chart(ctx, {
-                              type: 'pie', // 'line', 'pie', etc.
-                              data: {
-                                labels: nombresProductos,
-                                datasets: [{
-                                  label: 'Cantidad Vendida',
-                                  data: ventas,
-                                  backgroundColor: coloresFondo,
-                                  borderColor: coloresBorde,
-                                  borderWidth: 1
-                                }]
-                              },
-                                options: {
-                                  responsive: true,
-                                  plugins: {
-                                    legend: {
-                                      position: 'top',
-                                      labels: {
-                                        boxWidth: 50,
-                                        padding: 15,
-                                        color: 'white',
-                                        font: {
-                                          size: 16 // 🔸 tamaño de letra de la leyenda
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error al hacer POST:", error);
-                    });
-    }
-
-    function cambiarMesVistas(z){
-        fechas = [];
-        vistas = [];
-        switch(z){
-            case 1:{
-                if(valor-1 >= 0){
-                    valor -= 1;
-                }
-            }
-            break;
-            case 2:{
-                if(valor+1 <= 12){
-                    valor += 1;
-                }
-            }
-            break;
-        }
-
-        if(valor-1 > 0){
-            document.getElementById("visitasLabel").innerText = "Visitas del mes de "+meses[valor-1];
-        }else{
-            document.getElementById("visitasLabel").innerText = "Visitas del mes de "+meses[0];
-        }
-        fetch("/api/contadorvistasapi/MonthlyVisits/"+valor, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: 'include',
-                cache: "no-store"
+<script> 
+    let ordenActual;
+    function reembolso(){
+        fetch("/api/ordenapi/confirmarReembolso", {
+            method: "PUT",
+            headers: { 
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(ordenActual)
         })
-        .then(response => response.json())
-        .then(data => {
-            var lista = data.listaVistas;
-            document.getElementById("totalVistas").innerText = "Total de visitas mensuales = "+data.vistasMensuales;
-            for(let i = 0; i < lista.length; i++){
-                fechas[i] = lista[i].fecha.split("T")[0];
-                vistas[i] = lista[i].cantidad;
-            }
-            if(chartVistas){
-                chartVistas.destroy();
-            }
-            // Configuración del gráfico
-            const ctx = document.getElementById('graficoVisitas').getContext('2d');
-            chartVistas = new Chart(ctx, {
-                type: 'line', // 'line', 'pie', etc.
-                data: {
-                    labels: fechas,
-                    datasets: [{
-                      label: 'Visitas',
-                      data: vistas,
-                      backgroundColor: coloresFondo,
-                      borderColor: coloresBorde,
-                      borderWidth: 1
-                      }]
-                },
-                options: {
-                      plugins: {
-                        legend: {
-                          labels: {
-                            font: {
-                              size: 16 // 🔸 tamaño de letra de la leyenda
-                            },
-                            color: 'white'
-                          }
-                        },
-                        tooltip: {
-                          bodyFont: {
-                            size: 14 // 🔸 tamaño de letra del tooltip
-                          },
-                          titleFont: {
-                            size: 16
-                          }
-                        }
-                      },
-                      scales: {
-                        x: {
-                          ticks: {
-                            font: {
-                              size: 14 // 🔸 tamaño en eje X
-                            },
-                            color: 'white'
-                          }
-                        },
-                        y: {
-                          ticks: {
-                            font: {
-                              size: 14 // 🔸 tamaño en eje Y
-                            },
-                            color: 'white'
-                          }
-                        }
-                      }
-                    }
-                });
+            .then(response => {
+                if(response.ok){
+                    location.reload();
+                }
             })
             .catch(error => {
-                console.error("Error al hacer POST:", error);
+                console.error("Error al hacer PUT:", error);
             });
     }
 
-            async function descargarExcel() {
-              try {
-                const response = await fetch('/api/productoapi/all/'+valor); // URL de tu API
-                const datos = await response.json(); // suponiendo que devuelve un array de objetos
-                
-                // Convertimos JSON a hoja de Excel
-                const hoja = XLSX.utils.json_to_sheet(datos.productos);
-
-                // Agregar fila de total (puede variar según las columnas que tengas)
-                XLSX.utils.sheet_add_aoa(hoja, [["", "Total vendidos", datos.totalVendidos]], { origin: -1 });
-
-                // Agregar fila de total (puede variar según las columnas que tengas)
-                XLSX.utils.sheet_add_aoa(hoja, [["", "Venta total", datos.gananciaTotal]], { origin: -1 });
-
-                const libro = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(libro, hoja, "Datos");
-                if(valor-1 > 0){
-                    XLSX.writeFile(libro, "reporte de ventas: "+meses[valor-1]+".xlsx");
-                }else{
-                    XLSX.writeFile(libro, "reporte de ventas: "+meses[0]+".xlsx");
-                }
-              } catch (error) {
-                console.error("Error al descargar los datos:", error);
-              }
+    function OpenModal(opcion, id){
+        ordenActual = id;
+        $("#ModalCrear").modal("show");
+        switch(opcion){
+            case("reembolso"): {
+                document.getElementById("reembolso").style.display = "";
+                document.getElementById("form-label").style.display = "";
+                document.getElementById("form-label").innerText = "¿Desea confirmar el reembolso de esta orden?";
+                document.getElementById("modalCrearLabel").innerText = "Confirmar reembolso.";
+                document.getElementById("form-input").style.display = "none";
+                document.getElementById("confirmar").style.display = "none";
             }
+            break;
+            case("confirmar"): {
+                document.getElementById("confirmar").style.display = "";
+                document.getElementById("form-input").style.display = "";
+                document.getElementById("form-label").style.display = "none";
+                document.getElementById("reembolso").style.display = "none";
+            }
+            break;
+        }
+    }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                cambiarMesTop(0);
-                cambiarMesVistas(0);
+    function cerrarCrear() {
+        $("#ModalCrear").modal("hide");
+    }
+
+    function actualizarContadorNombre(textarea) {
+        const errorSpan = document.getElementById("contador_Nombre");
+        document.getElementById("error-nombre").innerText = "";
+        if (document.getElementById("input-numero-Guia").value !== "") {
+            errorSpan.className = "mt-1";
+            errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+        }
+        else {
+            errorSpan.textContent = `${textarea.value.length}/45 caracteres`;
+        }
+
+    }
+
+    function confirmarEnvio(){
+        fetch("/api/ordenapi/confirmarEnvio", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idOrden : ordenActual,
+                numeroDeGuia : document.getElementById("input-numero-Guia").value
+            })
+        })
+            .then(response => {
+                if(response.ok){
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error("Error al hacer PUT:", error);
             });
+    }
+
+    function toggleCollapse(tipo) {
+        const collapse = document.getElementById("collapse-" + tipo);
+        const toggleBtn = document.getElementById("boton-toggle-" + tipo);
+
+        // Si está expandido, lo colapsamos, y viceversa
+        if (collapse.classList.contains("collapsed")) {
+            collapse.classList.remove("collapsed");
+            collapse.style.border="1px solid gray";
+            toggleBtn.innerHTML = "<h2>Mostrar menos <i class='fa-solid fa-angles-up'></i></h2>";
+        } else {
+            collapse.classList.add("collapsed");
+            collapse.style.border="0px";
+            toggleBtn.innerHTML = "<h2>Mostrar más <i class='fa-solid fa-angles-down'></i></h2>";
+        }
+    }
 </script>

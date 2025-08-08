@@ -30,9 +30,10 @@ namespace TBD.Controllers
                            direccion = o.direccion,
                            fechaPedido = o.fechaPedido,
                            fechaEnviado = o.fechaEnviado,
+                           fechaRecibido = o.fechaRecibido,
                            numeroDeGuia = o.numeroDeGuia,
                            Estado = o.Estado,
-                       }).OrderBy(p => p.fechaPedido.Year).ThenBy(p => p.fechaPedido.Month).ToList();
+                       }).OrderByDescending(p => p.fechaPedido.Month).ThenBy(p => p.fechaPedido.Day).ToList();
 
             return ordenes;
         }
@@ -84,6 +85,21 @@ namespace TBD.Controllers
             return productos;
         }
 
+        public Dictionary<String, List<int>> listCantidades(List<OrdenRequest> ordenes, 
+            Dictionary<String, List<PedidoRequest>> pedidos) {
+            var cantidades = new Dictionary<String, List<int>>();
+            foreach (var item in ordenes)
+            {
+                var lista = new List<int>();
+                foreach (var p in pedidos[item.idOrden])
+                {
+                    lista.Add(p.cantidad);
+                }
+                cantidades[item.idOrden] = lista;
+            }
+            return cantidades;
+        }
+
         [Route("ordenes/all")]
         public ActionResult GetOrdenes(string idOrden)
         {
@@ -91,7 +107,8 @@ namespace TBD.Controllers
             var ordenes = listOrdenes(idUsario);
             var pedidos = listPedidos(ordenes);
             var productos = listProductos(pedidos);
-            return View(new AllPedidosRequest { ordenes = ordenes, productos = productos });
+            var cantidades = listCantidades(ordenes, pedidos);
+            return View(new AllPedidosRequest { ordenes = ordenes, productos = productos, cantidades = cantidades});
         }
     }
 }

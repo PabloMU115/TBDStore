@@ -55,7 +55,7 @@
 
             const details = await response.json();
             if(details.status == "success") {
-                window.location.href = "/Checkout/Success/"+details.id;
+                window.location.href = "/Checkout/Success/"+details.id+"/"+details.paypal;
             }
             else{
                 document.getElementById("notification-container").innerHTML = `

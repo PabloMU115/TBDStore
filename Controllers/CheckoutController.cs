@@ -170,13 +170,15 @@ namespace TBD.Controllers
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
                 requestMessage.Content = new StringContent("", null, "application/json");
 
-                var httpResponse = await client.SendAsync(requestMessage);
+                var httpResponse = await client.SendAsync(requestMessage); 
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var strResponse = await httpResponse.Content.ReadAsStringAsync();
                     var jsonResponse = JsonNode.Parse(strResponse);
+                    Console.WriteLine(jsonResponse);
                     if (jsonResponse != null)
                     {
+                        var idTransaccion = jsonResponse["purchase_units"][0]["payments"]["captures"].ToString().Split("\"id\": \"")[1].Split("\",")[0];
                         string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
                         if (paypalOrderStatus == "COMPLETED")
                         {
@@ -197,7 +199,7 @@ namespace TBD.Controllers
                             var orden = new Orden
                             {
                                 idOrden = Guid.NewGuid()+"",
-                                paypalID = orderId,
+                                paypalID = idTransaccion,
                                 fechaPedido = fechaActual,
                                 direccion = envío,
                                 Estado = EstadoPedido.Pendiente,
@@ -211,7 +213,6 @@ namespace TBD.Controllers
                                 if (c.cantidad > 0) 
                                 {
                                     var producto = await _context.Productos.FirstOrDefaultAsync(p => p.IdProducto == c.id);
-                                    var productoVendido = await getHistorialItem(fechaActual, c.id);
 
                                     pedido = new Pedido
                                     {
@@ -224,13 +225,10 @@ namespace TBD.Controllers
 
                                     _context.Pedidos.Add(pedido);
 
-                                    //producto.cantidadVendidos += c.cantidad;
-                                    //producto.StockDisponible -= c.cantidad;
+                                    producto.cantidadVendidos += c.cantidad;
+                                    producto.StockDisponible -= c.cantidad;
 
-                                    //productoVendido.cantidadVendida += c.cantidad;
-
-                                    //_context.Productos.Update(producto);
-                                    //_context.HistorialVentas.Update(productoVendido);
+                                    _context.Productos.Update(producto);
                                 }
                             }
                             var carritoActual = _context.Carrito.Where(p => p.IdUsuario == _userManager.GetUserId(User)).ToList();
@@ -240,7 +238,7 @@ namespace TBD.Controllers
                             }
                             await _context.SaveChangesAsync();
 
-                            return new JsonResult(new { status = "success", id = orden.idOrden });
+                            return new JsonResult(new { status = "success", id = orden.idOrden, paypal = idTransaccion });
                         }
                     }
                 }
@@ -249,8 +247,8 @@ namespace TBD.Controllers
             return new JsonResult("error");
         }
 
-        [Route("/Checkout/Success/{idOrden}")]
-        public ActionResult Success(string idOrden) {
+        [Route("/Checkout/Success/{idOrden}/{paypalId}")]
+        public ActionResult Success(string idOrden, string paypalId) {
             var pedidoActual = _context.Pedidos.Where(p => p.IdOrden == idOrden).ToList();
             List<Producto> listaProductos = [];
             List<int> listaCantidades= [];
@@ -260,7 +258,7 @@ namespace TBD.Controllers
                 listaProductos.Add(producto);
                 listaCantidades.Add(c.cantidad);
             }
-            return View(new CheckoutSuccessRequest { productos = listaProductos, cantidades = listaCantidades, ordenId = idOrden });
+            return View(new CheckoutSuccessRequest { productos = listaProductos, cantidades = listaCantidades, ordenId = idOrden, paypalId = paypalId });
         }
     }
 }

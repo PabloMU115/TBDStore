@@ -12,11 +12,19 @@
     <div id="carrito-items" class="carrito-items">
         @if (Model.Count() == 0)
         {
-            <div class="carrito-label"><h3>El carrito se encuentra vacío.</h3></div>
+            <div class="carrito-label">
+                <h3 id="carrito-label">
+                    El carrito se encuentra vacío.
+                </h3>
+            </div>
         }
         else
         {
-            <div class="carrito-label mt-2"><h3 id="carrito-label">Carrito:</h3></div>
+            <div class="carrito-label mt-2">
+                <h3 id="carrito-label">
+                    Carrito:
+                </h3>
+            </div>
         }
         @foreach (var c in Model)
         {
@@ -158,16 +166,14 @@
                 <h5 id="numero" style="margin-left: 3px; "></h5>
                 <h5 id="provincia" style="margin-left: 3px; "></h5>
                 <h5 id="canton" style="margin-left: 3px; "></h5>
-                <div style="
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      font-size: 15px;
-      margin-left: 3px;
-                  max-width: 237px !important;
-      ">
-                    <h5 id="detalles" style="font-size: 15px;"></h5>
+                <div id="detalles" style="
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 2;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    font-size: 16px;
+                                    max-width: 300px;">
                 </div>
             </div>
             <div id="div-direcciones-carrito-none" style="border: 1px solid white; border-radius: 12px; width: 70%;">
@@ -175,15 +181,14 @@
                     <h5>No posee dirección principal.</h5>
                 </div>
             </div>
-            <a id="btn-comprar" class="btn-comprar" style="text-decoration: none;">
-                Proceder con la compra
-            </a>
-            @await Component.InvokeAsync("PasarelaDePago")
+            <div id="pasarela-div" style="display: none; margin-bottom: 10px; margin: 10px;">
+                @await Component.InvokeAsync("PasarelaDePago")
+            </div>
         </div>
     </div>
 </div>
 
 @section scripts {
-    <script src="~/js/GestionarCarritosScrips.js"></script>
+    <script src="~/js/GestionarCarritosScripz.js"></script>
 }
 

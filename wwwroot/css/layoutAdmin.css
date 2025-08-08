@@ -737,7 +737,7 @@ a {
     border-radius: 8px;
     font-size: 19px !important;
     text-decoration: none;
-    color: inherit; /* Asegura que no lo herede mal */
+    color: white !important; /* Asegura que no lo herede mal */
     padding: 10px 15px;
     transition: background-color 0.2s ease;
 }
@@ -748,11 +748,150 @@ a {
     text-decoration: none;
 }
 
+.colapsable {
+    overflow: hidden;
+    max-height: 9999px; /* Un valor alto inicial, ya que el contenido estará expandido */
+    transition: max-height 0.3s ease;
+    margin-left: 10px;
+    border-radius: 8px;
+    max-width: 98% !important;
+    position: relative;
+}
 
+.colapsable.collapsed {
+    max-height: 0px;  /* Se colapsa a 0px cuando tenga la clase collapsed */
+}
+
+.colapsable-content {
+    padding: 15px;
+}
+
+.boton-toggle {
+    display: block;
+    text-align: center;
+    background-color: #007bff;
+    width: 250px;
+    border-radius: 8px;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+}
+
+.grid-orden {
+    display: flex;
+    border: 2px dashed gray;
+    border-radius: 8px;
+    width: auto;
+}
+
+.btn-eliminar-orden {
+    border: 1px solid transparent;
+    text-decoration: none;
+    min-width: 50px;
+    cursor: pointer;
+    height: 30px;
+    border-radius: 8px;
+    transition: 0.3s ease;
+}
+
+.btn-eliminar-orden:hover {
+    background-color: white;
+    color: red;
+}
+
+.btn-confirmar-orden {
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    min-width: 50px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: green;
+    color: white;
+    transition: 0.3s ease;
+}
+
+.btn-confirmar-orden:hover {
+    background-color: white;
+    color: green;
+}
+
+.items-orders {
+    display: grid;
+    grid-template-columns: repeat(3, 0fr);
+    gap: 16px;
+}
+
+.item-order-producto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 150px;
+    width: 150px;
+    border: 1px solid;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.img-order-producto {
+    max-height: 100px;
+    max-width: 100px;
+    border-radius: 8px;
+}
+
+.item-success:hover {
+    color: black;
+    background-color: gainsboro;
+    transition: 0.3s ease;
+}
+
+.contenedor {
+    width: 300px;
+    border: 2px solid #ccc;
+    margin: 20px auto;
+    padding: 10px;
+    position: relative;
+}
+
+.btn-reembolsar-orden {
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    min-width: 50px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: gold;
+    color: black;
+    transition: 0.3s ease;
+}
+
+.btn-reembolsar-orden:hover {
+    background-color: darkgoldenrod;
+    color: white;
+}
 /* En pantallas pequeñas (ej: móviles): activar scroll horizontal */
 @media (max-width: 768px) {
     html {
         font-size: 12px;
+    }
+
+    .btn-confirmar-orden,
+    .btn-eliminar-orden {
+        margin-left: 5%;
+        width: 90%;
+        height: 40px;
+    }
+
+    .grid-orden {
+        flex-direction: column;
+    }
+
+
+    .items-orders {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
 
     #search-items {

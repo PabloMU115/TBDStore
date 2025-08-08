@@ -1,0 +1,279 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<span id="mes" hidden>@DateTime.Now.Month</span>
+<div style="display: flex; flex-direction: column;">
+    <!-- Gráfico 1 -->
+    <div style="">
+        <div class="d-flex justify-content-between">
+            <h2 id="fechaLabel" onclick="descargarExcel()" style="margin-left: 10px;"></h2>
+            <button class="topTenMonth" style="margin-right: 10px;" onclick="descargarExcel()"><i class="fa-solid fa-download"></i> Descargar Informe</button>
+        </div>
+        <h2 id="noData" class="mt-5 mb-5" style="display: none; width: 100%; text-align: center;">Hay ventas registradas para este mes</h2>
+        <canvas style="max-height: 300px;" id="graficoProductos"></canvas>
+    </div>
+    <div class="d-flex justify-content-around">
+        <a class="topTenMonth" onclick="cambiarMesTop(1)"><i class="fa-solid fa-chevron-left"></i>Mes anterior</a>
+        <a class="topTenMonth" onclick="cambiarMesTop(2)">Siguiente mes<i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+
+    <!-- Gráfico 2 -->
+    <div class="mt-5" style="">
+        <h2 id="visitasLabel" style="margin-left: 10px;"></h2>
+        <h4 id="totalVistas" style="margin-left: 10px;"></h4>
+        <canvas style="max-height: 300px;" id="graficoVisitas"></canvas>
+        <div class="d-flex justify-content-around">
+            <a class="topTenMonth" onclick="cambiarMesVistas(1)"><i class="fa-solid fa-chevron-left"></i>Mes anterior</a>
+            <a class="topTenMonth" onclick="cambiarMesVistas(2)">Siguiente mes<i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let nombresProductos = [];
+    let ventas = [];
+    let fechas = [];
+    let vistas = [];
+    const meses = Array.from({ length: 12 }, (_, i) =>
+      new Date(0, i).toLocaleString('es-ES', { month: 'long' })
+    );
+    let chartProductos;
+    let chartVistas;
+    let valor = parseInt(document.getElementById('mes').innerText);
+    const coloresFondo = [
+      'rgba(255, 99, 132, 0.7)',   // rojo rosado
+      'rgba(54, 162, 235, 0.7)',   // azul
+      'rgba(255, 206, 86, 0.7)',   // amarillo
+      'rgba(75, 192, 192, 0.7)',   // verde agua
+      'rgba(153, 102, 255, 0.7)',  // morado
+      'rgba(255, 159, 64, 0.7)',   // naranja
+      'rgba(201, 203, 207, 0.7)',  // gris claro
+      'rgba(90, 200, 130, 0.7)',   // verde medio
+      'rgba(255, 112, 179, 0.7)',  // rosado
+      'rgba(160, 120, 90, 0.7)'    // marrón
+    ];
+
+    const coloresBorde = coloresFondo.map(color =>
+      color.replace("0.7", "1") // Aumenta opacidad para el borde
+    );
+
+    function cambiarMesTop(z){
+        nombresProductos = [];
+        ventas = [];
+        switch(z){
+            case 1:{
+                if(valor-1 >= 0){
+                    valor -= 1;
+                }
+            }
+            break;
+            case 2:{
+                if(valor+1 <= 12){
+                    valor += 1;
+                }
+            }
+            break;
+        }
+        
+        if(valor-1 > 0){
+            document.getElementById("fechaLabel").innerText = "Top 10 productos más vendidos de "+meses[valor-1];
+        }else{
+            document.getElementById("fechaLabel").innerText = "Top 10 productos más vendidos de "+meses[0];
+        }
+        fetch("/api/productoapi/topten/"+valor, {
+            method: "GET",
+                headers: {
+                        "Content-Type": "application/json"
+                },
+                    credentials: 'include',
+                    cache: "no-store"
+                })
+                .then(response => response.json())
+                    .then(data => {
+                        if(data.length == 0){
+                            document.getElementById("noData").style.display = "";
+                            document.getElementById("graficoProductos").style.display = "none";
+                        }
+                        else{
+                            document.getElementById("noData").style.display = "none";
+                            document.getElementById("graficoProductos").style.display = "";
+                            for(let i = 0; i < data.length; i++){
+                                nombresProductos[i] = data[i].nombreProducto;
+                                ventas[i] = data[i].cantidadVendidos;
+                            }
+                            // Configuración del gráfico
+                            const ctx = document.getElementById('graficoProductos').getContext('2d');
+                            if (chartProductos) {
+                                chartProductos.destroy();
+                            }
+
+                            chartProductos = new Chart(ctx, {
+                              type: 'pie', // 'line', 'pie', etc.
+                              data: {
+                                labels: nombresProductos,
+                                datasets: [{
+                                  label: 'Cantidad Vendida',
+                                  data: ventas,
+                                  backgroundColor: coloresFondo,
+                                  borderColor: coloresBorde,
+                                  borderWidth: 1
+                                }]
+                              },
+                                options: {
+                                  responsive: true,
+                                  plugins: {
+                                    legend: {
+                                      position: 'top',
+                                      labels: {
+                                        boxWidth: 50,
+                                        padding: 15,
+                                        color: 'white',
+                                        font: {
+                                          size: 16 // 🔸 tamaño de letra de la leyenda
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al hacer POST:", error);
+                    });
+    }
+
+    function cambiarMesVistas(z){
+        fechas = [];
+        vistas = [];
+        switch(z){
+            case 1:{
+                if(valor-1 >= 0){
+                    valor -= 1;
+                }
+            }
+            break;
+            case 2:{
+                if(valor+1 <= 12){
+                    valor += 1;
+                }
+            }
+            break;
+        }
+
+        if(valor-1 > 0){
+            document.getElementById("visitasLabel").innerText = "Visitas del mes de "+meses[valor-1];
+        }else{
+            document.getElementById("visitasLabel").innerText = "Visitas del mes de "+meses[0];
+        }
+        fetch("/api/contadorvistasapi/MonthlyVisits/"+valor, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include',
+                cache: "no-store"
+        })
+        .then(response => response.json())
+        .then(data => {
+            var lista = data.listaVistas;
+            document.getElementById("totalVistas").innerText = "Total de visitas mensuales = "+data.vistasMensuales;
+            for(let i = 0; i < lista.length; i++){
+                fechas[i] = lista[i].fecha.split("T")[0];
+                vistas[i] = lista[i].cantidad;
+            }
+            if(chartVistas){
+                chartVistas.destroy();
+            }
+            // Configuración del gráfico
+            const ctx = document.getElementById('graficoVisitas').getContext('2d');
+            chartVistas = new Chart(ctx, {
+                type: 'line', // 'line', 'pie', etc.
+                data: {
+                    labels: fechas,
+                    datasets: [{
+                      label: 'Visitas',
+                      data: vistas,
+                      backgroundColor: coloresFondo,
+                      borderColor: coloresBorde,
+                      borderWidth: 1
+                      }]
+                },
+                options: {
+                      plugins: {
+                        legend: {
+                          labels: {
+                            font: {
+                              size: 16 // 🔸 tamaño de letra de la leyenda
+                            },
+                            color: 'white'
+                          }
+                        },
+                        tooltip: {
+                          bodyFont: {
+                            size: 14 // 🔸 tamaño de letra del tooltip
+                          },
+                          titleFont: {
+                            size: 16
+                          }
+                        }
+                      },
+                      scales: {
+                        x: {
+                          ticks: {
+                            font: {
+                              size: 14 // 🔸 tamaño en eje X
+                            },
+                            color: 'white'
+                          }
+                        },
+                        y: {
+                          ticks: {
+                            font: {
+                              size: 14 // 🔸 tamaño en eje Y
+                            },
+                            color: 'white'
+                          }
+                        }
+                      }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error al hacer POST:", error);
+            });
+    }
+
+            async function descargarExcel() {
+              try {
+                const response = await fetch('/api/productoapi/all/'+valor); // URL de tu API
+                const datos = await response.json(); // suponiendo que devuelve un array de objetos
+                
+                // Convertimos JSON a hoja de Excel
+                const hoja = XLSX.utils.json_to_sheet(datos.productos);
+
+                // Agregar fila de total (puede variar según las columnas que tengas)
+                XLSX.utils.sheet_add_aoa(hoja, [["", "Total vendidos", datos.totalVendidos]], { origin: -1 });
+
+                // Agregar fila de total (puede variar según las columnas que tengas)
+                XLSX.utils.sheet_add_aoa(hoja, [["", "Venta total", datos.gananciaTotal]], { origin: -1 });
+
+                const libro = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(libro, hoja, "Datos");
+                if(valor-1 > 0){
+                    XLSX.writeFile(libro, "reporte de ventas: "+meses[valor-1]+".xlsx");
+                }else{
+                    XLSX.writeFile(libro, "reporte de ventas: "+meses[0]+".xlsx");
+                }
+              } catch (error) {
+                console.error("Error al descargar los datos:", error);
+              }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                cambiarMesTop(0);
+                cambiarMesVistas(0);
+            });
+</script>

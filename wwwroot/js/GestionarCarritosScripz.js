@@ -165,11 +165,13 @@ function eliminarDelCarrito(id, nombre, categoria) {
 				cantidadTotal.innerHTML = resta + " items";
 				if (resta === 0) {
 					document.getElementById("carrito-label").innerHTML = "El carrito se encuentra vacío.";
-					document.getElementById("btn-comprar").hidden = true;
 				}
 				subtotal.innerHTML = parseFloat(subtotal.innerHTML) - parseFloat(total.innerHTML.split("₡")[1]);
 				div.style.pointerEvents = "";
 				div.innerHTML = cont;
+				if (document.getElementById("carrito-label").innerText != "Carrito:") {
+					document.getElementById("pasarela-div").style.display = "none";
+				}
 			}, 500);
 		})
 		.catch(error => {
@@ -197,6 +199,12 @@ function consultarDireccionDeterminada() {
 				document.getElementById("provincia").innerText = datos.provincia;
 				document.getElementById("canton").innerText = datos.canton;
 				document.getElementById("detalles").innerText = datos.detallesDireccion;
+				if (document.getElementById("carrito-label").innerText != "Carrito:") {
+					document.getElementById("pasarela-div").style.display = "none";
+				}
+				else {
+					document.getElementById("pasarela-div").style.display = "";
+				}
 			}
 			else {
 				document.getElementById("div-direcciones-carrito").style.display = "none";
@@ -231,6 +239,7 @@ function devolverAlCarrito(id) {
 				var unitario = document.getElementById("unitario_" + id).innerHTML.split("₡")[1];
 				subTotal.innerHTML = parseFloat(subTotal.innerHTML) + parseFloat(unitario);
 				cantidadTotal.innerHTML = parseInt(cantidadTotal.innerHTML) + 1;
+				document.getElementById("pasarela-div").style.display = "";
 			}
 		})
 		.catch(error => {

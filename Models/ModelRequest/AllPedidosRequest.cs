@@ -5,5 +5,6 @@ namespace TBD.Models.ModelRequest
     {
         public List<OrdenRequest> ordenes { get; set; }
         public Dictionary<String, List<Producto>> productos { get; set; }
+        public Dictionary<String, List<int>> cantidades { get; set; }
     }
 }

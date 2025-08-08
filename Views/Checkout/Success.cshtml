@@ -6,6 +6,7 @@
 <div style="text-align: center; margin-bottom: 20px;">
     <h1>¡Su orden ha sido realizada de forma exitosa!</h1>
     <h3>Número de orden: @Model.ordenId</h3>
+    <h3>Id de transacción: @Model.paypalId</h3>
     <h3>Detalles de la orden:</h3>
 </div>
 <div class="success-container gap-3">
@@ -45,7 +46,7 @@
         </div>
     </div>
     <h2>Contenido de la orden:</h2>
-    <div class="items-checkout-success">
+    <div class="items-checkout-success gap-1">
         @foreach (var c in Model.productos)
         {
             <a class="item-success"
@@ -59,4 +60,7 @@
             </a>
         }
     </div>
+    <a href="/ordenes/all" class="item-success" style="max-height: 50px; justify-content: center;">
+        <h4>Ir a lista de pedidos <i class="fa-solid fa-angles-right"></i></h4>
+    </a> 
 </div>

@@ -9,7 +9,8 @@ namespace TBD.Models
         Pendiente = 0, 
         Enviado = 1, 
         Cancelado = 2, 
-        Entregado = 3 
+        Entregado = 3,
+        Reembolsado = 4
     }
 
     public class Orden
@@ -29,6 +30,9 @@ namespace TBD.Models
 
         public DateTime fechaPedido { get; set; }
         public DateTime fechaEnviado { get; set; }
+        public DateTime fechaRecibido { get; set; }
+        public DateTime fechaReembolsado { get; set; }
+        public DateTime fechaCancelado { get; set; }
 
         public EstadoPedido Estado { get; set; } = EstadoPedido.Pendiente;
 

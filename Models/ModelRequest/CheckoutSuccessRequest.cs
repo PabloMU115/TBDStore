@@ -4,6 +4,7 @@
     {
         public List<Producto> productos { get; set; }
         public string ordenId { get; set; }
+        public string paypalId { get; set; }
         public List<int> cantidades { get; set; }
     }
 }
