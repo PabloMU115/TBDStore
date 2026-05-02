@@ -36,7 +36,7 @@ The application follows a layered architecture:
 2. Configure database connection
    Update `appsettings.json` with your MySQL credentials.
 
-3. Apply migrations (if applicable)
+3. Apply migrations
 
    ```bash
    dotnet ef database update
