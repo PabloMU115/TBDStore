@@ -15,7 +15,7 @@ Full-stack e-commerce application developed using C# (.NET), focused on managing
 * **Backend:** ASP.NET Core (.NET)
 * **ORM:** Entity Framework
 * **Database:** MySQL
-* **Frontend:** (agrega aquí si usaste Angular / Razor / otro)
+* **Frontend:** Razor
 
 ## 🧠 Architecture
 
